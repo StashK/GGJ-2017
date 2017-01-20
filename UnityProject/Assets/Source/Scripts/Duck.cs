@@ -6,6 +6,7 @@ public class Duck : MonoBehaviour {
 
     private AirConsoleManager.Player airController;
     public int playerId;
+    public string playerName;
     public float angle = 0;
     [Range(0,1)]
     public float distance = 1.0f;
