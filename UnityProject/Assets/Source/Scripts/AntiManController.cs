@@ -31,7 +31,7 @@ public class AntiManController : MonoBehaviour {
 		targetLineForward = new Vector3(inputVector.x, 0, -inputVector.y);
 		inputLength = targetLineForward.magnitude;
 
-		Debug.Log("InputLenght: " + inputLength);
+		//Debug.Log("InputLenght: " + inputLength);
 
 		// Toggle isWaving and particles
 		if (inputLength > 0.05f)

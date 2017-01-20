@@ -1,8 +1,9 @@
 ﻿using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Duck : MonoBehaviour {
+public class Duck : MonoBehaviour, IComparable {
 
     private AirConsoleManager.Player airController;
     public int playerId;
@@ -12,6 +13,19 @@ public class Duck : MonoBehaviour {
     public float distance = 1.0f;
 
     private float prevAngle;
+
+    public int CompareTo(object obj)
+    {
+        if (obj == null) return 1;
+
+        Duck otherDuck = obj as Duck;
+        if (otherDuck != null)
+        {
+            return this.distance.CompareTo(otherDuck.distance);
+        }
+
+        return 0;
+    }
 	// Use this for initialization
 	void Start () {
         airController = AirConsoleManager.Instance.GetPlayer(playerId);
@@ -20,7 +34,7 @@ public class Duck : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-
+        if(!is
         distance -= DuckGameGlobalConfig.distanceSpeed * Time.deltaTime;
 
         if (airController.GetButtonDown(InputAction.Gameplay.MoveLeft))
