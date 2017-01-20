@@ -212,7 +212,7 @@ public class AirConsoleManager : MonoBehaviour {
         Debug.Log("Ad Complete. Ad was shown: " + adWasShown + "\n \n");
         JPL.Core.Sounds.UpdateBackgroundVolume(1f);
         JPL.Core.Game.Unpause();
-        LoadingScreen.LoadScene("Main_Menu");
+        //LoadingScreen.LoadScene("Main_Menu");
     }
 
     void OnGameEnd()
@@ -321,33 +321,34 @@ public class AirConsoleManager : MonoBehaviour {
         {
             get
             {
-                if (Game.gameState == GAMESTATE.LOADING)
-                {
-                    return "Loading";
-                }
-                else if(Game.gameState == GAMESTATE.PLAYING || Game.gameState == GAMESTATE.LOADINGPLAY || Game.gameState == GAMESTATE.PAUSED)
-                {
-                    if (playerId != -1)
-                    {
-                        if(Game.gameState == GAMESTATE.PAUSED)
-                            return "Pause";
-                        else
-                            return "GamePlaying";
-                    }
-                    else if (manager.PlayersAvailable > 0)
-                        return "Join";
-                    else
-                        return "MaxPlayers";
-                }
-                else
-                {
-                    if (playerId != -1)
-                        return "MenuPlaying";
-                    else if (manager.PlayersAvailable > 0)
-                        return "Join";
-                    else
-                        return "MaxPlayers";
-                }
+                //if (Game.gameState == GAMESTATE.LOADING)
+                //{
+                //    return "Loading";
+                //}
+                //else if(Game.gameState == GAMESTATE.PLAYING || Game.gameState == GAMESTATE.LOADINGPLAY || Game.gameState == GAMESTATE.PAUSED)
+                //{
+                //    if (playerId != -1)
+                //    {
+                //        if(Game.gameState == GAMESTATE.PAUSED)
+                //            return "Pause";
+                //        else
+                //            return "GamePlaying";
+                //    }
+                //    else if (manager.PlayersAvailable > 0)
+                //        return "Join";
+                //    else
+                //        return "MaxPlayers";
+                //}
+                //else
+                //{
+                //    if (playerId != -1)
+                //        return "MenuPlaying";
+                //    else if (manager.PlayersAvailable > 0)
+                //        return "Join";
+                //    else
+                //        return "MaxPlayers";
+                //}
+                return "Loading";
             }
         }
         public string customClass
@@ -484,26 +485,26 @@ public class AirConsoleManager : MonoBehaviour {
         {
             switch (key)
             {
-                // Gameplay keys
-                case InputAction.GamePlay.Jump:
-                    return input.jump;
-                case InputAction.GamePlay.Dash:
-                    return input.jump;
-                case InputAction.GamePlay.Shield:
-                    return input.shield;
-                case InputAction.GamePlay.Grab:
-                    return input.grab;
-                case InputAction.GamePlay.Pause:
-                    return input.start;
-                case InputAction.GamePlay.Exit:
-                    return input.select;
-                // Menu keys
-                case InputAction.Menu.Start:
-                    return input.start;
-                case InputAction.Menu.UISubmit:
-                    return input.jump;
-                case InputAction.Menu.UICancel:
-                    return input.grab;
+                //// Gameplay keys
+                //case InputAction.GamePlay.Jump:
+                //    return input.jump;
+                //case InputAction.GamePlay.Dash:
+                //    return input.jump;
+                //case InputAction.GamePlay.Shield:
+                //    return input.shield;
+                //case InputAction.GamePlay.Grab:
+                //    return input.grab;
+                //case InputAction.GamePlay.Pause:
+                //    return input.start;
+                //case InputAction.GamePlay.Exit:
+                //    return input.select;
+                //// Menu keys
+                //case InputAction.Menu.Start:
+                //    return input.start;
+                //case InputAction.Menu.UISubmit:
+                //    return input.jump;
+                //case InputAction.Menu.UICancel:
+                //    return input.grab;
             }
 
             return false;
@@ -518,10 +519,10 @@ public class AirConsoleManager : MonoBehaviour {
         {
             switch (key)
             {
-                case InputAction.GamePlay.MoveHorizontal:
-                    return input.x;
-                case InputAction.GamePlay.MoveVertical:
-                    return input.y;
+                //case InputAction.GamePlay.MoveHorizontal:
+                //    return input.x;
+                //case InputAction.GamePlay.MoveVertical:
+                //    return input.y;
             }
 
             return 0f;
@@ -642,21 +643,21 @@ public class AirConsoleManager : MonoBehaviour {
 
         public void Reset(bool force = false)
         {
-            if (Game.gameState == GAMESTATE.PLAYING || force)
-            {
-                // reset
-                jump = false;
-                grab = false;
-                start = false;
-                shield = false;
-                select = false;
+            //if (Game.gameState == GAMESTATE.PLAYING || force)
+            //{
+            //    // reset
+            //    jump = false;
+            //    grab = false;
+            //    start = false;
+            //    shield = false;
+            //    select = false;
 
-                if (Game.gameState != GAMESTATE.PLAYING)
-                {
-                    x = 0f;
-                    y = 0f;
-                }
-            }
+            //    if (Game.gameState != GAMESTATE.PLAYING)
+            //    {
+            //        x = 0f;
+            //        y = 0f;
+            //    }
+            //}
         }
     }
 }
