@@ -37,8 +37,8 @@ public class AirConsoleManager : MonoBehaviour {
         AirConsole.instance.onDeviceStateChange += OnDeviceStateChange;
         AirConsole.instance.onCustomDeviceStateChange += OnCustomDeviceStateChange;
         AirConsole.instance.onDeviceProfileChange += OnDeviceProfileChange;
-        AirConsole.instance.onAdShow += OnAdShow;
-        AirConsole.instance.onAdComplete += OnAdComplete;
+        //AirConsole.instance.onAdShow += OnAdShow;
+        //AirConsole.instance.onAdComplete += OnAdComplete;
         AirConsole.instance.onGameEnd += OnGameEnd;
     }
 
@@ -100,6 +100,8 @@ public class AirConsoleManager : MonoBehaviour {
 
     void OnMessage(int from, JToken data)
     {
+        Debug.Log(data.ToString());
+
         foreach (Player p in playerList)
         {
             if (p.DeviceId == from)
@@ -198,22 +200,22 @@ public class AirConsoleManager : MonoBehaviour {
         Debug.Log("Device " + deviceId + " made changes to its profile. \n \n");
     }
 
-    void OnAdShow()
-    {
-        //Log to on-screen Console
-        Debug.Log("On Ad Show \n \n");
-        JPL.Core.Sounds.UpdateBackgroundVolume(0f);
-        JPL.Core.Game.Pause();
-    }
+    //void OnAdShow()
+    //{
+    //    //Log to on-screen Console
+    //    Debug.Log("On Ad Show \n \n");
+    //    JPL.Core.Sounds.UpdateBackgroundVolume(0f);
+    //    JPL.Core.Game.Pause();
+    //}
 
-    void OnAdComplete(bool adWasShown)
-    {
-        //Log to on-screen Console
-        Debug.Log("Ad Complete. Ad was shown: " + adWasShown + "\n \n");
-        JPL.Core.Sounds.UpdateBackgroundVolume(1f);
-        JPL.Core.Game.Unpause();
-        //LoadingScreen.LoadScene("Main_Menu");
-    }
+    //void OnAdComplete(bool adWasShown)
+    //{
+    //    //Log to on-screen Console
+    //    Debug.Log("Ad Complete. Ad was shown: " + adWasShown + "\n \n");
+    //    JPL.Core.Sounds.UpdateBackgroundVolume(1f);
+    //    JPL.Core.Game.Unpause();
+    //    //LoadingScreen.LoadScene("Main_Menu");
+    //}
 
     void OnGameEnd()
     {
@@ -505,6 +507,14 @@ public class AirConsoleManager : MonoBehaviour {
                 //    return input.jump;
                 //case InputAction.Menu.UICancel:
                 //    return input.grab;
+                case InputAction.Gameplay.MoveLeft:
+                    return input.moveLeft;
+                case InputAction.Gameplay.MoveRight:
+                    return input.moveRight;
+                case InputAction.Gameplay.WeaponLeft:
+                    return input.weaponLeft;
+                case InputAction.Gameplay.WeaponRight:
+                    return input.weaponRight;
             }
 
             return false;
@@ -532,29 +542,11 @@ public class AirConsoleManager : MonoBehaviour {
 
     public class Input
     {
-        // The x & y values of the joystick
-        public float x { get; private set; }
-        public float y { get; private set; }
 
-        // the jump button input
-        public bool jump { get; private set; }
-        private float jumpCooldown = 0f;
-
-        //the grab button input
-        public bool grab { get; private set; }
-        private float grabCooldown = 0f;
-
-        //the grab button input
-        public bool shield { get; private set; }
-        private float shieldCooldown = 0f;
-
-        //the grab button input
-        public bool start { get; private set; }
-        private float startCooldown = 0f;
-
-        //the grab button input
-        public bool select { get; private set; }
-        private float selectCooldown = 0f;
+        public bool moveLeft { get; private set; }
+        public bool moveRight { get; private set; }
+        public bool weaponLeft { get; private set; }
+        public bool weaponRight { get; private set; }
 
         /// <summary>
         /// processes the raw data
@@ -564,68 +556,30 @@ public class AirConsoleManager : MonoBehaviour {
         {
             ///Debug.Log(data.ToString());
             // update joystick input
-            x = data["movement"].Value<float>("x") / 50f;
-            y = data["movement"].Value<float>("y") / 50f * -1f;
+            //x = data["movement"].Value<float>("x") / 50f;
+            //y = data["movement"].Value<float>("y") / 50f * -1f;
 
             //Debug.Log("X: " + x + " Y: " + y);
+            //data.Value<bool>("jump")
 
-            // update jump
-            if (jumpCooldown <= 0f && data.Value<bool>("jump"))
+
+            if (data.Value<string>("element") == "move-left")
             {
-                //Debug.Log("jump: ");
-                jump = true;
-                jumpCooldown = BUTTON_COOLDOWN;
-            }
-            else
-            {
-                //jump = false;
+                moveLeft = data["data"].Value<bool>("pressed");
             }
 
-            // update jump
-            if (shieldCooldown <= 0f && data.Value<bool>("shield"))
+            if (data.Value<string>("element") == "move-right")
             {
-                //Debug.Log("shield: ");
-                shield = true;
-                shieldCooldown = BUTTON_COOLDOWN;
-            }
-            else
-            {
-                //jump = false;
+                moveRight = data["data"].Value<bool>("pressed");
             }
 
-            // update grab
-            if (grabCooldown <= 0f && data.Value<bool>("grab"))
+            if (data.Value<string>("element") == "weapon-left")
             {
-                grab = true;
-                grabCooldown = BUTTON_COOLDOWN;
+                weaponLeft = data["data"].Value<bool>("weapon-left");
             }
-            else
+            if (data.Value<string>("element") == "weapon-right")
             {
-                //grab = false;
-            }
-
-            // update grab
-            if (startCooldown <= 0f && data.Value<bool>("start"))
-            {
-                //Debug.Log("start");
-                start = true;
-                startCooldown = BUTTON_COOLDOWN;
-            }
-            else
-            {
-                //start = false;
-            }
-
-            // update grab
-            if (selectCooldown <= 0f && data.Value<bool>("select"))
-            {
-                //Debug.Log("select");
-                select = true;
-                selectCooldown = BUTTON_COOLDOWN;
-            }
-            else
-            {
-                //start = false;
+                weaponRight = data["data"].Value<bool>("pressed");
             }
         }
 
@@ -634,11 +588,11 @@ public class AirConsoleManager : MonoBehaviour {
         /// </summary>
         public void Update ()
         {
-            jumpCooldown -= Time.unscaledDeltaTime;
-            grabCooldown -= Time.unscaledDeltaTime;
-            shieldCooldown -= Time.unscaledDeltaTime;
-            startCooldown -= Time.unscaledDeltaTime;
-            selectCooldown -= Time.unscaledDeltaTime;
+            //jumpCooldown -= Time.unscaledDeltaTime;
+            //grabCooldown -= Time.unscaledDeltaTime;
+            //shieldCooldown -= Time.unscaledDeltaTime;
+            //startCooldown -= Time.unscaledDeltaTime;
+            //selectCooldown -= Time.unscaledDeltaTime;
         }
 
         public void Reset(bool force = false)
