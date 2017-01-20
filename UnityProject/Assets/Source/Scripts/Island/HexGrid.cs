@@ -9,7 +9,7 @@ public class HexGrid : MonoBehaviour
     public int y = 5;
 
     public float radius = 0.5f;
-    private bool useAsInnerCircleRadius = true;
+    private bool useAsInnerCircleRadius = false;
 
     private float offsetX, offsetY;
 
@@ -82,7 +82,7 @@ public class HexGrid : MonoBehaviour
     {
         if (gridTransforms[x,y] != null)
         {
-            LeanTween.scale(gridTransforms[x, y].gameObject, Vector3.zero, 2f).setDelay(2f + delay + Random.Range(0f, 0.1f)).setEase(LeanTweenType.easeInOutCubic);
+            LeanTween.scale(gridTransforms[x, y].gameObject, Vector3.zero, 1.5f).setDelay(2f + delay + Random.Range(0f, 0.1f)).setEase(LeanTweenType.easeInCubic);
         }
     }
 
