@@ -30,6 +30,9 @@ public class Duck : MonoBehaviour, IComparable {
 	void Start () {
         airController = AirConsoleManager.Instance.GetPlayer(playerId);
         prevAngle = angle;
+
+        PastelGenerator.Lightness = 0.3f;
+        GetComponent<Renderer>().material.color = PastelGenerator.Generate();
 	}
 	
 	// Update is called once per frame
