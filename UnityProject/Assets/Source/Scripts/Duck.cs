@@ -20,13 +20,19 @@ public class Duck : MonoBehaviour {
 
         if (airController.GetButtonDown(InputAction.Gameplay.MoveLeft))
         {
+            Debug.Log("Moving Left");
             GoLeft();
         }
 
         if (airController.GetButtonDown(InputAction.Gameplay.MoveRight))
         {
+            Debug.Log("Moving Right");
             GoRight();
         }
+
+        Vector2 toBePlacedVector = new Vector2(1.0f, 0.0f);
+        toBePlacedVector = toBePlacedVector.Rotate(angle) * distance * DuckGameGlobalConfig.startDistance;
+        transform.position = new Vector3(toBePlacedVector.x, 0, toBePlacedVector.y);
 	}
 
 
