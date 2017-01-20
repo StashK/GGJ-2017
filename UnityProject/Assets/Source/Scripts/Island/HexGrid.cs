@@ -43,6 +43,8 @@ public class HexGrid : MonoBehaviour
 
     private void SpawnGrid ()
     {
+        Transform parent = new GameObject("level").transform;
+
         for (int i = 0; i < x; i++)
         {
             for (int j = 0; j < y; j++)
@@ -53,6 +55,7 @@ public class HexGrid : MonoBehaviour
                 if(Vector3.Distance(pos, Vector3.zero) < activeRadius)
                 {
                     gridTransforms[i, j] = Instantiate(spawnThis, pos, Quaternion.identity);
+                    gridTransforms[i, j].parent = parent;
                 }
             }
         }
