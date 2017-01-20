@@ -452,6 +452,14 @@ public class AirConsoleManager : MonoBehaviour {
             get { return deviceId; }
         }
 
+        public string Nickname
+        {
+            get
+            {
+                return AirConsole.instance.GetNickname(deviceId);
+            }
+        }
+
         public Input input { get; private set; }
 
         public Player (int playerId)
