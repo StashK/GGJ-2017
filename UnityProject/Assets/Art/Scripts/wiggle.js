@@ -19,7 +19,9 @@ function Start()
 
 function Update ()
 {
+     x = Random.Range(xmin,xmax);
     y = Random.Range(ymin,ymax);
+      z = Random.Range(zmin,zmax);
 
     transform.RotateAround(bird.transform.position, new Vector3(x, y, z), 100 * Time.deltaTime*speed);
 }
