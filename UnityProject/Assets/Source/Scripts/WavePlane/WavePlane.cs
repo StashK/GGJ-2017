@@ -30,6 +30,7 @@ public class WavePlane : MonoBehaviour
     void Start()
     {
         local = this;
+
     }
 
     public void CreateWave(Vector3 position, Vector3 direction)
