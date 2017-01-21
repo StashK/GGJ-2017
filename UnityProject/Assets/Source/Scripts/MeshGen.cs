@@ -84,11 +84,12 @@ public class MeshGen : MonoBehaviour {
         curDistance = distance;
 
         int vIndex = 0;
+        Quad q;
         for (int i = 0; i < sizeX; i++)
         {
             for (int j = 0; j < sizeX; j++)
             {
-                Quad q = quads[i, j];
+                q = quads[i, j];
                 q.Calculate();
 
                 int triangleIndex = vIndex;
@@ -200,6 +201,7 @@ public class MeshGen : MonoBehaviour {
 
         public void Calculate()
         {
+            if(active)
             Calculate(start, end);
         }
 
@@ -230,6 +232,11 @@ public class MeshGen : MonoBehaviour {
                 vertices[5] = (center2 + ((vertices[5] - center2)) * random);
                 vertices[4] = (center2 + ((vertices[4] - center2)) * random);
                 vertices[3] = (center2 + ((vertices[3] - center2)) * random);
+            }
+
+            if (!active1 && active2)
+            {
+                active = false;
             }
         }
     }
