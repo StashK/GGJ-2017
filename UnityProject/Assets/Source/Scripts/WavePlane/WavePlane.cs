@@ -62,10 +62,10 @@ public class WavePlane : MonoBehaviour
         DeWaveTimer += Time.deltaTime;
 
         if (vertices != null && vertices.Length > 0)
-        GetComponent<MeshFilter>().mesh.vertices = vertices;
+            GetComponent<MeshFilter>().mesh.vertices = vertices;
     }
 
-    IEnumerator Calc ()
+    IEnumerator Calc()
     {
         yield return Ninja.JumpToUnity;
 
@@ -82,7 +82,7 @@ public class WavePlane : MonoBehaviour
         Wave[] Waves = new Wave[this.Waves.Count];
         this.Waves.CopyTo(Waves);
 
-        
+
         Mesh mesh = GetComponent<MeshFilter>().mesh;
         Vector3[] vertices = mesh.vertices;
 
