@@ -59,7 +59,7 @@ public class MeshGen : MonoBehaviour {
 
         yield return Ninja.JumpToUnity;
 
-        GetComponent<MeshFilter>().mesh.Clear();
+        //GetComponent<MeshFilter>().mesh.Clear();
         GetComponent<MeshFilter>().mesh.vertices = vertices;
 
         this.StartCoroutineAsync(Test());

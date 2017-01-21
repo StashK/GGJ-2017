@@ -6,7 +6,7 @@ public class Wave
 {
     public Vector3 position;
     public Vector3 direction;
-    public float speed = 10.0f;
+    public float speed = 50.0f;
 }
 
 public class WavePlane : MonoBehaviour
@@ -59,7 +59,7 @@ public class WavePlane : MonoBehaviour
         foreach (Wave wave in Waves)
         {
             wave.position += wave.direction * Time.deltaTime * wave.speed;
-            if (wave.position.magnitude > 15.0f)
+            if (wave.position.magnitude > 25.0f)
             {
                 Waves.Remove(wave);
                 break;
@@ -81,18 +81,10 @@ public class WavePlane : MonoBehaviour
                 playerPos.y = 0.0f;
 
                 float distance = Vector3.Distance(playerPos, worldPt);
-                if (distance > 5.0f)
-                    continue;
 
-                float localWaveHeight = (Mathf.Pow(distance, HeightPower)) * HeightMutliplier;
-                localWaveHeight = Mathf.Clamp(localWaveHeight, 0.0f, 1.0f);
-                localWaveHeight = 1.0f - localWaveHeight;
+                waveHeight += 1.0f / distance;
+                waveHeight = Mathf.Clamp(waveHeight, 0.0f, 1.0f) * 1.5f;
 
-                Vector3 directional = worldPt - playerPos;
-                float dirScale = Vector3.Dot(wave.direction, directional) * 0.1f;
-
-
-                waveHeight += transform.position.y + (localWaveHeight * 3.0f * dirScale);
             }
 
             vertices[i].y += transform.position.y + waveHeight;
