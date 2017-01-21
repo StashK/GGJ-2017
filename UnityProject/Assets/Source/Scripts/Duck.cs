@@ -12,6 +12,7 @@ public class Duck : MonoBehaviour, IComparable
     public float angle = 0;
     [Range(0, 1)]
     public float distance = 1.0f;
+	public float fatness = 1.0f;
 
     private bool isDeath = false;
 
@@ -109,8 +110,9 @@ public class Duck : MonoBehaviour, IComparable
 
     }
 
-    void OnCollisionEnter(Collision collision)
+	void OnCollisionEnter(Collision collision)
     {
+		
         if (collision.collider.tag == "Player")
         {
             Debug.Log(collision.contacts[0].point);
@@ -145,5 +147,14 @@ public class Duck : MonoBehaviour, IComparable
                 }
             }
         }
+
+		if(collision.collider.tag == "BreadPickup")
+		{
+			Debug.Log("BreadPickup");
+			fatness++;
+			transform.localScale = Vector3.one * fatness;
+			Destroy(collision.collider.gameObject);
+		}
+		
     }
 }
