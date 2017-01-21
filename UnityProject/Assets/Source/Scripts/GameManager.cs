@@ -17,21 +17,21 @@ public class GameManager : MonoBehaviour {
         int steppers = 0;
         foreach (AirConsoleManager.Player p in AirConsoleManager.Instance.ActivePlayers())
         {
-            Transform instantiatedDuckTransform = Instantiate(JPL.Core.Prefabs.duck, new Vector3(10.0f, 0, 0), Quaternion.identity);
+            Vector2 spawnPosition = new Vector2(1, 0);
+            spawnPosition = spawnPosition.Rotate(steppers * steps);
+            Transform instantiatedDuckTransform = Instantiate(JPL.Core.Prefabs.duck, new Vector3(spawnPosition.x * DuckGameGlobalConfig.startDistance, 0, spawnPosition.y * DuckGameGlobalConfig.startDistance), Quaternion.identity);
             Duck neededDuck = instantiatedDuckTransform.GetComponent<Duck>();
             neededDuck.playerId = p.PlayerId;
             neededDuck.playerName = p.playerName;
-            neededDuck.angle = steps * steppers;
             duckList.Add(neededDuck);
             steppers++;
         }
         startTime = Time.time;
-        maxDistance = DuckGameGlobalConfig.startDistance;
+        maxDistance = DuckGameGlobalConfig.startDistance +1;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-
         if (!isGameFinished)
         {
             if(!isPreFallOffFinished && Time.time >= startTime + DuckGameGlobalConfig.preDropOffTime) //Duck dieing starts

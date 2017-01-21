@@ -15,7 +15,7 @@ public class Duck : MonoBehaviour, IComparable
 	public float fatness = 1.0f;
 
     private bool isDeath = false;
-
+    private Rigidbody rb;
     private bool tapped = false;
     private bool isDoubleTapped = false;
     private int doubleTapCounter = 0;
@@ -43,13 +43,22 @@ public class Duck : MonoBehaviour, IComparable
         airController = AirConsoleManager.Instance.GetPlayer(playerId);
         PastelGenerator.Lightness = 0.3f;
         GetComponent<Renderer>().material.color = PastelGenerator.Generate();
+        rb = GetComponent<Rigidbody>();
+        transform.LookAt(FindObjectOfType<AntiManController>().transform);
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
+        Debug.Log(isDeath);
         if(isDeath)
             return;
+
+
+        Debug.Log(transform.forward);
+        transform.LookAt(FindObjectOfType<AntiManController>().transform);
+        rb.velocity = transform.forward * DuckGameGlobalConfig.moveSpeed;
+
         if (tapped)
             doubleTapCounter++;
 
@@ -59,7 +68,7 @@ public class Duck : MonoBehaviour, IComparable
             tapped = false;
             Debug.Log("tapped is false");
         }
-        distance -= DuckGameGlobalConfig.distanceSpeed * Time.deltaTime;
+        
         
         if (airController.GetButtonDown(InputAction.Gameplay.MoveLeft))
         {
@@ -88,20 +97,22 @@ public class Duck : MonoBehaviour, IComparable
             tapped = true;
             Debug.Log("tapped is true");
         }
+    }
 
-        Vector2 toBePlacedVector = new Vector2(1.0f, 0.0f);
-        toBePlacedVector = toBePlacedVector.Rotate(angle) * distance * DuckGameGlobalConfig.startDistance;
-        transform.position = new Vector3(toBePlacedVector.x, 0, toBePlacedVector.y);
+    void Update()
+    {
+       // transform.LookAt(GetComponent<AntiManController>().transform);
+
     }
 
     private void GoLeft()
     {
-        angle -= DuckGameGlobalConfig.moveSpeed * Time.deltaTime;
+        rb.velocity += transform.right;
     }
 
     private void GoRight()
     {
-        angle += DuckGameGlobalConfig.moveSpeed * Time.deltaTime;
+        rb.velocity -= transform.right;
     }
 
     public void Kill()
@@ -113,7 +124,7 @@ public class Duck : MonoBehaviour, IComparable
 	void OnCollisionEnter(Collision collision)
     {
 		
-        if (collision.collider.tag == "Player")
+        /*if (collision.collider.tag == "Player")
         {
             Debug.Log(collision.contacts[0].point);
             //HackyHacky sorta working
@@ -155,6 +166,6 @@ public class Duck : MonoBehaviour, IComparable
 			transform.localScale = Vector3.one * fatness;
 			Destroy(collision.collider.gameObject);
 		}
-		
+		*/
     }
 }
