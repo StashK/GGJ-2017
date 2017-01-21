@@ -29,11 +29,15 @@ public class MeshGen : MonoBehaviour {
         curDistance = newDistance;
     }
 
-    IEnumerator Test ()
+    public void LateUpdate ()
     {
-        yield return new WaitForEndOfFrame();
-        //yield return Ninja.JumpToUnity;
-        //vertices = GetComponent<MeshFilter>().mesh.vertices;
+        float[] height;
+
+        if (WavePlane.HeightMap != null)
+            height = (float[])WavePlane.HeightMap.Clone();
+        else
+            height = new float[vertices.Length];
+
         //yield return Ninja.JumpBack;
         curDistance = distance;
 
@@ -50,6 +54,7 @@ public class MeshGen : MonoBehaviour {
                 for (int k = 0; k < q.vertices.Length; k++)
                 {
                     vertices[vIndex] = q.vertices[k];
+                    vertices[vIndex].y += height[vIndex];
                     vIndex++;
                 }
 
@@ -58,10 +63,53 @@ public class MeshGen : MonoBehaviour {
             }
         }
 
-        yield return Ninja.JumpToUnity;
+        //yield return Ninja.JumpToUnity;
 
         //GetComponent<MeshFilter>().mesh.Clear();
         GetComponent<MeshFilter>().sharedMesh.vertices = vertices;
+    }
+
+    IEnumerator Test ()
+    {
+        yield return Ninja.JumpToUnity;
+        //vertices = GetComponent<MeshFilter>().mesh.vertices;
+        float[] height;
+
+        if (WavePlane.HeightMap != null)
+            height = (float[])WavePlane.HeightMap.Clone();
+        else
+            height = new float[vertices.Length];
+
+        //yield return Ninja.JumpBack;
+        curDistance = distance;
+
+        int vIndex = 0;
+        for (int i = 0; i < sizeX; i++)
+        {
+            for (int j = 0; j < sizeX; j++)
+            {
+                Quad q = quads[i, j];
+                q.Calculate();
+
+                int triangleIndex = vIndex;
+                // copy vertices
+                for (int k = 0; k < q.vertices.Length; k++)
+                {
+                    vertices[vIndex] = q.vertices[k];
+                    vertices[vIndex].y += height[vIndex];
+                    vIndex++;
+                }
+
+                // set triangles
+                //vertices[triangleIndex] = triangleIndex;
+            }
+        }
+
+        //yield return Ninja.JumpToUnity;
+
+        //GetComponent<MeshFilter>().mesh.Clear();
+        GetComponent<MeshFilter>().sharedMesh.vertices = vertices;
+        //yield return new WaitForEndOfFrame();
 
         this.StartCoroutineAsync(Test());
     }
