@@ -109,17 +109,19 @@ public class AntiManController : MonoBehaviour
 
         foreach (Collider collider in gameObjectsInRange)
         {
-            Rigidbody duck = collider.GetComponent<Rigidbody>();
+            Rigidbody RB = collider.GetComponent<Rigidbody>();
+            Duck duck = collider.GetComponent<Duck>();
 
-            if (duck)
+			if (duck && !duck.IsDeath())
             {
-                duck.AddForce(targetLineForward * duckPushForce * inputLength, ForceMode.Force);
+				if(RB)
+					RB.AddForce(targetLineForward * duckPushForce * inputLength, ForceMode.Force);
             }
         }
     }
 
-    // Update is called once per frame
-    void Update()
+	// Update is called once per frame
+	void Update()
     {
         CheckInput();
 
