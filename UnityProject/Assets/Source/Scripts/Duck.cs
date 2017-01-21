@@ -14,7 +14,11 @@ public class Duck : MonoBehaviour, IComparable
     public float distance = 1.0f;
     public float fatness = 1.0f;
 
-    private bool isDeath = false;
+	public Vector3 displacementVector;
+	[Range(0, 1)]
+	public float displacementResetLerp = 0f;
+
+	private bool isDeath = false;
     private Rigidbody rb;
     private bool tapped = false;
     private bool isDoubleTapped = false;
@@ -54,7 +58,7 @@ public class Duck : MonoBehaviour, IComparable
             return;
 
         transform.LookAt(FindObjectOfType<AntiManController>().transform);
-        rb.velocity = transform.forward * DuckGameGlobalConfig.moveSpeed;
+        rb.velocity = transform.forward * DuckGameGlobalConfig.moveSpeed - displacementVector;
 
         if (tapped)
             doubleTapCounter++;
@@ -98,15 +102,17 @@ public class Duck : MonoBehaviour, IComparable
 
     void Update()
     {
-		// transform.LookAt(GetComponent<AntiManController>().transform);
-		transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one * Mathf.Pow(fatness, -3), 0.1f);
-        if (airController.GetButtonDown(InputAction.Gameplay.WeaponLeft))
+        // transform.LookAt(GetComponent<AntiManController>().transform);
+        transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one * Mathf.Pow(fatness, -3), 0.1f);
+		displacementVector = Vector3.Lerp(displacementVector, Vector3.zero, displacementResetLerp);
+
+
+		if (airController.GetButtonDown(InputAction.Gameplay.WeaponLeft))
         {
-            Debug.Log("FSDFSDF");
             SubtitleRenderer.AddSubtitle(new DuckTitles
             {
                 Text = "Quack !",
-                Colour = PastelGenerator.Generate(),
+                Colour = transform.Find("Ducky_Body").GetComponent<Renderer>().material.color,
                 Size = 32
             });
         }
