@@ -12,6 +12,8 @@ public class Duck : MonoBehaviour, IComparable {
     [Range(0,1)]
     public float distance = 1.0f;
 
+    private bool isDeath = false;
+
     private float prevAngle;
 
     public int CompareTo(object obj)
@@ -37,22 +39,24 @@ public class Duck : MonoBehaviour, IComparable {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-        if(!is
-        distance -= DuckGameGlobalConfig.distanceSpeed * Time.deltaTime;
-
-        if (airController.GetButtonDown(InputAction.Gameplay.MoveLeft))
+        if (!isDeath)
         {
-            GoLeft();
-        }
+            distance -= DuckGameGlobalConfig.distanceSpeed * Time.deltaTime;
 
-        if (airController.GetButtonDown(InputAction.Gameplay.MoveRight))
-        {
-            GoRight();
-        }
+            if (airController.GetButtonDown(InputAction.Gameplay.MoveLeft))
+            {
+                GoLeft();
+            }
 
-        Vector2 toBePlacedVector = new Vector2(1.0f, 0.0f);
-        toBePlacedVector = toBePlacedVector.Rotate(angle) * distance * DuckGameGlobalConfig.startDistance;
-        transform.position = new Vector3(toBePlacedVector.x, 0, toBePlacedVector.y);
+            if (airController.GetButtonDown(InputAction.Gameplay.MoveRight))
+            {
+                GoRight();
+            }
+
+            Vector2 toBePlacedVector = new Vector2(1.0f, 0.0f);
+            toBePlacedVector = toBePlacedVector.Rotate(angle) * distance * DuckGameGlobalConfig.startDistance;
+            transform.position = new Vector3(toBePlacedVector.x, 0, toBePlacedVector.y);
+        }
 	}
 
     private void Update()
