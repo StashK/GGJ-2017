@@ -29,6 +29,8 @@ public class WavePlane : MonoBehaviour
 
     private Vector3[] vertices;
 
+    public static float[] HeightMap;
+
     // Use this for initialization
     void Start()
     {
@@ -91,6 +93,8 @@ public class WavePlane : MonoBehaviour
         //yield return Ninja.JumpBack;
         int i = 0;
 
+        List<float> tempMap = new List<float>();
+
         while (i < vertices.Length)
         {
             Vector3 worldPt = vertices[i];
@@ -111,13 +115,13 @@ public class WavePlane : MonoBehaviour
                 waveHeight = Mathf.Clamp(waveHeight, 0.0f, 1.0f) * 1.5f;
             }
 
-            vertices[i].y += waveHeight;
+            tempMap.Add(waveHeight);
             i++;
         }
+
+        HeightMap = tempMap.ToArray();
+
         yield return Ninja.JumpToUnity;
-        this.vertices = vertices;
-        //mesh.RecalculateBounds();
-        //mesh.RecalculateNormals();
         this.StartCoroutineAsync(Calc());
     }
 
