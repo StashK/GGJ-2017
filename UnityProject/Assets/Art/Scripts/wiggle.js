@@ -25,7 +25,7 @@ function Update ()
     z = Random.Range(zmin,zmax);
 
     // counter += 1;
-    z
+    
     transform.RotateAround(palm.transform.position, new Vector3(x, y, z), 100 * Time.deltaTime*speed);
 
     if (counter <=  100) {
