@@ -199,7 +199,7 @@ public class AirConsoleManager : MonoBehaviour {
     void OnDeviceStateChange(int deviceId, JToken data)
     {
         //Log to on-screen Console
-        Debug.Log("Device State Change on device: " + deviceId + ", data: " + data + "\n \n");
+        //Debug.Log("Device State Change on device: " + deviceId + ", data: " + data + "\n \n");
     }
 
     void OnCustomDeviceStateChange(int deviceId, JToken custom_data)
@@ -432,7 +432,7 @@ public class AirConsoleManager : MonoBehaviour {
             j.AddField("color", color);
             j.AddField("class", customClass);
 
-            Debug.Log(j.Print());
+            //Debug.Log(j.Print());
 
             return j;
         }
@@ -444,6 +444,11 @@ public class AirConsoleManager : MonoBehaviour {
         public STATE state = STATE.UNCLAIMED;
         public enum JOINSTATE { NOTJOINED, ACTIVATED, LOCKEDIN }
         private JOINSTATE _joinstate = JOINSTATE.NOTJOINED;
+        public string playerName
+        {
+            get { return AirConsole.instance.GetNickname(deviceId); }
+        }
+
         public JOINSTATE joinState
         {
             get { return _joinstate; }

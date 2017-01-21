@@ -52,7 +52,7 @@ public class WavePlane : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
         DeWaveTimer += Time.deltaTime;
 
@@ -95,7 +95,7 @@ public class WavePlane : MonoBehaviour
                 waveHeight += transform.position.y + (localWaveHeight * 3.0f * dirScale);
             }
 
-            vertices[i].y = transform.position.y + waveHeight;
+            vertices[i].y += transform.position.y + waveHeight;
             i++;
         }
         mesh.vertices = vertices;

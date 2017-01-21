@@ -12,11 +12,13 @@ public class Duck : MonoBehaviour, IComparable
     public float angle = 0;
     [Range(0, 1)]
     public float distance = 1.0f;
+	public float fatness = 1.0f;
 
     private bool isDeath = false;
 
-    private float prevAngle;
-
+    private bool tapped = false;
+    private bool isDoubleTapped = false;
+    private int doubleTapCounter = 0;
     public bool IsDeath()
     {
         return isDeath;
@@ -39,7 +41,6 @@ public class Duck : MonoBehaviour, IComparable
     void Start()
     {
         airController = AirConsoleManager.Instance.GetPlayer(playerId);
-        prevAngle = angle;
         PastelGenerator.Lightness = 0.3f;
         GetComponent<Renderer>().material.color = PastelGenerator.Generate();
     }
@@ -47,29 +48,50 @@ public class Duck : MonoBehaviour, IComparable
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (!isDeath)
+        if(isDeath)
+            return;
+        if (tapped)
+            doubleTapCounter++;
+
+        if (doubleTapCounter >= 10)
         {
-            distance -= DuckGameGlobalConfig.distanceSpeed * Time.deltaTime;
-
-            if (airController.GetButtonDown(InputAction.Gameplay.MoveLeft))
-            {
-                GoLeft();
-            }
-
-            if (airController.GetButtonDown(InputAction.Gameplay.MoveRight))
-            {
-                GoRight();
-            }
-
-            Vector2 toBePlacedVector = new Vector2(1.0f, 0.0f);
-            toBePlacedVector = toBePlacedVector.Rotate(angle) * distance * DuckGameGlobalConfig.startDistance;
-            transform.position = new Vector3(toBePlacedVector.x, 0, toBePlacedVector.y);
+            doubleTapCounter = 0;
+            tapped = false;
+            Debug.Log("tapped is false");
         }
-    }
+        distance -= DuckGameGlobalConfig.distanceSpeed * Time.deltaTime;
+        
+        if (airController.GetButtonDown(InputAction.Gameplay.MoveLeft))
+        {
+            GoLeft();
 
-    private void Update()
-    {
-        prevAngle = angle;
+            if (tapped)
+            {
+                isDoubleTapped = true;
+                Debug.Log("Double tapped");
+            }
+        }
+        
+        if (airController.GetButtonDown(InputAction.Gameplay.MoveRight))
+        {
+            GoRight();
+
+            if (tapped)
+            {
+                isDoubleTapped = true;
+                Debug.Log("Double tapped");
+            }
+        }
+
+        if (airController.GetButtonUp(InputAction.Gameplay.MoveLeft) || airController.GetButtonUp(InputAction.Gameplay.MoveRight))
+        {
+            tapped = true;
+            Debug.Log("tapped is true");
+        }
+
+        Vector2 toBePlacedVector = new Vector2(1.0f, 0.0f);
+        toBePlacedVector = toBePlacedVector.Rotate(angle) * distance * DuckGameGlobalConfig.startDistance;
+        transform.position = new Vector3(toBePlacedVector.x, 0, toBePlacedVector.y);
     }
 
     private void GoLeft()
@@ -88,9 +110,9 @@ public class Duck : MonoBehaviour, IComparable
 
     }
 
-    void OnCollisionEnter(Collision collision)
+	void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("OnCollisionEnter");
+		
         if (collision.collider.tag == "Player")
         {
             Debug.Log(collision.contacts[0].point);
@@ -102,14 +124,37 @@ public class Duck : MonoBehaviour, IComparable
             from += centerToSide;
             to -= centerToSide;
             float diffAngle = Vector3.Angle(from, to);
-            if (Vector3.Dot(right, (from - to)) < 0)
+            if (!isDoubleTapped)
             {
-                angle += diffAngle * 0.1f;
+                if (Vector3.Dot(right, (from - to)) < 0)
+                {
+                    angle += diffAngle * 0.1f;
+                }
+                else
+                {
+                    angle -= diffAngle * 0.1f;
+                }
             }
             else
             {
-                angle -= diffAngle * 0.1f;
+                if (Vector3.Dot(right, (from - to)) < 0)
+                {
+                    collision.transform.GetComponent<Duck>().angle -= diffAngle * 0.8f;
+                }
+                else
+                {
+                    collision.transform.GetComponent<Duck>().angle += diffAngle * 0.8f;
+                }
             }
         }
+
+		if(collision.collider.tag == "BreadPickup")
+		{
+			Debug.Log("BreadPickup");
+			fatness++;
+			transform.localScale = Vector3.one * fatness;
+			Destroy(collision.collider.gameObject);
+		}
+		
     }
 }

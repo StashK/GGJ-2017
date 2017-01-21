@@ -13,14 +13,24 @@ public class GameManager : MonoBehaviour {
     private float maxDistance;
 	// Use this for initialization
 	void Start () {
-       duckList = FindObjectsOfType<Duck>().ToList<Duck>();
+        float steps = 360.0f / AirConsoleManager.Instance.ActivePlayers().Count;
+        int steppers = 0;
+        foreach (AirConsoleManager.Player p in AirConsoleManager.Instance.ActivePlayers())
+        {
+            Transform instantiatedDuckTransform = Instantiate(JPL.Core.Prefabs.duck, new Vector3(10.0f, 0, 0), Quaternion.identity);
+            Duck neededDuck = instantiatedDuckTransform.GetComponent<Duck>();
+            neededDuck.playerId = p.PlayerId;
+            neededDuck.playerName = p.playerName;
+            neededDuck.angle = steps * steppers;
+            duckList.Add(neededDuck);
+            steppers++;
+        }
         startTime = Time.time;
         maxDistance = DuckGameGlobalConfig.startDistance;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        duckList = FindObjectsOfType<Duck>().ToList<Duck>(); //Hackyhacky get ducks
 
         if (!isGameFinished)
         {
@@ -64,6 +74,12 @@ public class GameManager : MonoBehaviour {
         Debug.Log(name + " won");
         duckList.Sort();
         isGameFinished = true;
+
+        foreach (Duck d in duckList)
+        {
+            Debug.Log("killing duck");
+            d.Kill();
+        }
     }
 
     Duck GetFurtherstDuck()
@@ -81,7 +97,6 @@ public class GameManager : MonoBehaviour {
                     furtherstDistance = Vector3.Distance(d.transform.position, new Vector3(0, 0, 0));
                 }
             }
-
         }
         return returnDuck;
     }
