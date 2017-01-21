@@ -10,15 +10,12 @@ public class Duck : MonoBehaviour, IComparable
     public int playerId;
     public string playerName;
     public float angle = 0;
-    [Range(0, 1)]
-    public float distance = 1.0f;
     public float fatness = 1.0f;
 
     private bool isDeath = false;
     private Rigidbody rb;
-    private bool tapped = false;
-    private bool isDoubleTapped = false;
-    private int doubleTapCounter = 0;
+    private bool isBashActivated = false;
+    private int bashCounter = 0;
     public bool IsDeath()
     {
         return isDeath;
@@ -32,7 +29,7 @@ public class Duck : MonoBehaviour, IComparable
         Duck otherDuck = obj as Duck;
         if (otherDuck != null)
         {
-            return this.distance.CompareTo(otherDuck.distance);
+            return Mathf.RoundToInt(Vector3.Distance(this.transform.position, Vector3.zero) - Vector3.Distance(otherDuck.transform.position, Vector3.zero));
         }
 
         return 0;
@@ -53,53 +50,33 @@ public class Duck : MonoBehaviour, IComparable
         if (isDeath)
             return;
 
-        transform.LookAt(FindObjectOfType<AntiManController>().transform);
-        rb.velocity = transform.forward * DuckGameGlobalConfig.moveSpeed;
+        if (isBashActivated)
+            bashCounter++;
 
-        if (tapped)
-            doubleTapCounter++;
-
-        if (doubleTapCounter >= 10)
+        if (bashCounter >= 100)
         {
-            doubleTapCounter = 0;
-            tapped = false;
-            Debug.Log("tapped is false");
+            isBashActivated = false;
+            bashCounter = 0;
+            Debug.Log("Bash deactivated " + Time.frameCount);
         }
 
+        //Movement
+        transform.LookAt(FindObjectOfType<AntiManController>().transform);
+        rb.velocity = transform.forward * DuckGameGlobalConfig.moveSpeed;
 
         if (airController.GetButton(InputAction.Gameplay.MoveLeft))
         {
             GoLeft();
-
-            if (tapped)
-            {
-                isDoubleTapped = true;
-                Debug.Log("Double tapped");
-            }
         }
 
         if (airController.GetButton(InputAction.Gameplay.MoveRight))
         {
             GoRight();
-
-            if (tapped)
-            {
-                isDoubleTapped = true;
-                Debug.Log("Double tapped");
-            }
-        }
-
-        if (airController.GetButtonUp(InputAction.Gameplay.MoveLeft) || airController.GetButtonUp(InputAction.Gameplay.MoveRight))
-        {
-            tapped = true;
-            Debug.Log("tapped is true");
         }
     }
 
     void Update()
     {
-        // transform.LookAt(GetComponent<AntiManController>().transform);
-
         if (airController.GetButtonDown(InputAction.Gameplay.WeaponLeft))
         {
             Debug.Log("FSDFSDF");
@@ -110,21 +87,49 @@ public class Duck : MonoBehaviour, IComparable
                 Size = 32
             });
         }
+
+        if (airController.GetButtonDown(InputAction.Gameplay.WeaponRight))
+        {
+            isBashActivated = true;
+            bashCounter = 0;
+            Debug.Log("Bash Activated" + Time.frameCount);
+        }
+
+        RaycastHit hit;
+        if (Physics.Raycast(new Vector3(transform.position.x, 1000, transform.position.z), -Vector3.up, out hit, 1000.0f))
+        {
+            Debug.Log(hit.point);
+            transform.position = new Vector3(transform.position.x, hit.point.y + 0.8f, transform.position.z);
+        }
     }
 
     private void GoLeft()
     {
-        rb.velocity += transform.right;
+        rb.velocity += transform.right * DuckGameGlobalConfig.turnSpeed;
     }
 
     private void GoRight()
     {
-        rb.velocity -= transform.right;
+        rb.velocity -= transform.right * DuckGameGlobalConfig.turnSpeed;
     }
 
     public void Kill()
     {
         isDeath = true;
 
+    }
+
+    public void OnCollisionEnter(Collision collision)
+    {
+        if (collision.transform.tag == "Player")
+        {
+            if (isBashActivated)
+            {
+                Vector3 bashVector = collision.transform.position - transform.position;
+                bashVector.Normalize();
+
+                collision.transform.GetComponent<Rigidbody>().AddForce(bashVector * DuckGameGlobalConfig.bashForce);
+            }
+        }
     }
 }
