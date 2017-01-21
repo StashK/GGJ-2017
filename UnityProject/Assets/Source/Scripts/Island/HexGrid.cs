@@ -29,6 +29,13 @@ public class HexGrid : MonoBehaviour
         SpawnGrid();
 
         RemoveOuterRing(20f);
+        StartCoroutine(Test());
+    }
+
+    IEnumerator Test ()
+    {
+        yield return new WaitForSeconds(5f);
+        SetFalloff(15f);
     }
 
     private void InitGrid ()
@@ -68,6 +75,7 @@ public class HexGrid : MonoBehaviour
 
     private void RemoveOuterRing (float newRadius)
     {
+        Debug.Log("setting grid radius from " + activeRadius + " to " + newRadius);
         
         for (int i = 0; i < x; i++)
         {
