@@ -47,10 +47,10 @@ public class AirConsoleManager : MonoBehaviour {
         Instance = this;
 
         // populate players
-        for (int i = 0; i < 4; i++)
-        {
-            playerList.Add(new Player(i));
-        }
+        //for (int i = 0; i < 4; i++)
+        //{
+        //    playerList.Add(new Player(i));
+        //}
 
     }
 
@@ -136,7 +136,7 @@ public class AirConsoleManager : MonoBehaviour {
         Debug.Log("Device: " + deviceId + " connected. " + AirConsole.instance.GetNickname(deviceId));
 
         // trying to find a player to reconnect
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < playerList.Count; i++)
         {
             if (playerList[i].state == Player.STATE.DISCONNECTED && playerList[i].DeviceId == deviceId)
             {
@@ -148,7 +148,7 @@ public class AirConsoleManager : MonoBehaviour {
             }
         }
         // trying to find a player to claim
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < playerList.Count; i++)
         {
             if (playerList[i].state == Player.STATE.UNCLAIMED)
             {
@@ -161,6 +161,8 @@ public class AirConsoleManager : MonoBehaviour {
         }
 
         // create device
+        playerList.Add(new Player(playerList.Count));
+        playerList[playerList.Count - 1].Claim(deviceId);
         AddDevice(deviceId);
     }
 
@@ -461,6 +463,10 @@ public class AirConsoleManager : MonoBehaviour {
             this.playerId = playerId;
             // init Input
             input = new Input();
+
+            Transform duck = Instantiate(JPL.Core.Prefabs.duck);
+            duck.name = "duck_" + playerId;
+            
         }
 
         #region PLAYER_FUNCTIONS

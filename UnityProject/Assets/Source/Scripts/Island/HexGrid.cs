@@ -5,8 +5,8 @@ public class HexGrid : MonoBehaviour
 {
     public Transform spawnThis;
 
-    public int x = 5;
-    public int y = 5;
+    private int x = 50;
+    private int y = 50;
 
     public float radius = 0.5f;
     private bool useAsInnerCircleRadius = false;
@@ -43,6 +43,8 @@ public class HexGrid : MonoBehaviour
 
     private void SpawnGrid ()
     {
+        Transform parent = new GameObject("level").transform;
+
         for (int i = 0; i < x; i++)
         {
             for (int j = 0; j < y; j++)
@@ -53,9 +55,15 @@ public class HexGrid : MonoBehaviour
                 if(Vector3.Distance(pos, Vector3.zero) < activeRadius)
                 {
                     gridTransforms[i, j] = Instantiate(spawnThis, pos, Quaternion.identity);
+                    gridTransforms[i, j].parent = parent;
                 }
             }
         }
+    }
+
+    public void SetFalloff (float radius)
+    {
+        RemoveOuterRing(radius);
     }
 
     private void RemoveOuterRing (float newRadius)
