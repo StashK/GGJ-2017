@@ -30,7 +30,7 @@ public class WavePlane : MonoBehaviour
             playerPos.y = 0.0f;
 
             float distance = Vector3.Distance(playerPos, worldPt);
-            float waveHeight = (Mathf.Pow(distance, HeightPower)) * 0.005f;
+            float waveHeight = (Mathf.Pow(distance, HeightPower)) * HeightMutliplier;
             waveHeight = Mathf.Clamp(waveHeight, 0.0f, 1.0f);
             waveHeight = 1.0f - waveHeight;
 
