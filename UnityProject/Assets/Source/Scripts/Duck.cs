@@ -112,35 +112,16 @@ public class Duck : MonoBehaviour, IComparable
         }
     }
 
-    /// <summary>
-    /// Get the height of the terrain at given horizontal coordinates.
-    /// </summary>
-    /// <param name="xPos">X coordinate</param>
-    /// <param name="zPos">Z coordinate</param>
-    /// <returns>Height at given coordinates</returns>
     public float GetTerrainHeight(float xPos, float zPos)
     {
+        int x = (int)(xPos) + 25;
+        int z = (int)(zPos) + 25;
 
-        Mesh mesh = FindObjectOfType<WavePlane>().GetComponent<MeshFilter>().mesh;
-        Vector3[] vertices = mesh.vertices;
+        int i = x + z * 25;
 
-        // we first get the height of four points of the quad underneath the point
-        // Check to make sure this point is not off the map at all
-        int x = (int)(xPos);
-        int z = (int)(zPos);
-
-        int xPlusOne = x + 1;
-        int zPlusOne = z + 1;
-
-        float height = (vertices[x + z * (int)Mathf.Sqrt(vertices.Length)]).y;
+        float height = WavePlane.HeightMap[i];
 
         return height;
-    }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawSphere(transform.position + Vector3.up * GetTerrainHeight(transform.position.x, transform.position.y), 1.0f);
     }
 
     private void GoLeft()
