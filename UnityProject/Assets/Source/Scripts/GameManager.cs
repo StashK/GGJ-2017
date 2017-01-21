@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour {
     public float startTime;
     private bool isPreFallOffFinished = false;
     public float lastDropOffTime;
+    public HexGrid hexGrid;
 	// Use this for initialization
 	void Start () {
        duckList = FindObjectsOfType<Duck>().ToList<Duck>();
@@ -17,13 +18,15 @@ public class GameManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        duckList = FindObjectsOfType<Duck>().ToList<Duck>(); //Hackyhacky get ducks
+
         if (!isGameFinished)
         {
             if(!isPreFallOffFinished && Time.time >= startTime + DuckGameGlobalConfig.preDropOffTime) //Duck dieing starts
             {
                 isPreFallOffFinished = true;
                 lastDropOffTime = Time.time;
-                Debug.Log("Fall off starting");
+                Debug.Log("dropoff starting");
             }
 
             if (isPreFallOffFinished)
@@ -31,7 +34,10 @@ public class GameManager : MonoBehaviour {
                 if (Time.time >= lastDropOffTime + DuckGameGlobalConfig.dropOffTime) //Furthers duck dies 
                 {
                     lastDropOffTime = Time.time;
-                    GetFurtherstDuck().isDeath = true;
+                    Duck furtherstDuck = GetFurtherstDuck();
+                    furtherstDuck.isDeath = true;
+                    Debug.Log(Vector3.Distance(furtherstDuck.transform.position, Vector3.zero));
+                    hexGrid.SetFalloff(Vector3.Distance(furtherstDuck.transform.position, Vector3.zero));
                     Debug.Log("someone lost");
                 }
             }
@@ -61,10 +67,13 @@ public class GameManager : MonoBehaviour {
         returnDuck = duckList[0];
         foreach (Duck d in duckList)
         {
-            if (Vector3.Distance(d.transform.position, new Vector3(0, 0, 0)) > furtherstDistance)
+            if (!d.isDeath)
             {
-                returnDuck = d;
-                furtherstDistance = Vector3.Distance(d.transform.position, new Vector3(0, 0, 0));
+                if (Vector3.Distance(d.transform.position, new Vector3(0, 0, 0)) > furtherstDistance)
+                {
+                    returnDuck = d;
+                    furtherstDistance = Vector3.Distance(d.transform.position, new Vector3(0, 0, 0));
+                }
             }
 
         }
