@@ -15,8 +15,6 @@ public class Duck : MonoBehaviour, IComparable
 
     private bool isDeath = false;
 
-    private float prevAngle;
-
     public bool IsDeath()
     {
         return isDeath;
@@ -39,7 +37,6 @@ public class Duck : MonoBehaviour, IComparable
     void Start()
     {
         airController = AirConsoleManager.Instance.GetPlayer(playerId);
-        prevAngle = angle;
         PastelGenerator.Lightness = 0.3f;
         GetComponent<Renderer>().material.color = PastelGenerator.Generate();
     }
@@ -47,7 +44,7 @@ public class Duck : MonoBehaviour, IComparable
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (!isDeath)
+        if(isDeath)
             return;
 
         distance -= DuckGameGlobalConfig.distanceSpeed * Time.deltaTime;
@@ -65,11 +62,6 @@ public class Duck : MonoBehaviour, IComparable
         Vector2 toBePlacedVector = new Vector2(1.0f, 0.0f);
         toBePlacedVector = toBePlacedVector.Rotate(angle) * distance * DuckGameGlobalConfig.startDistance;
         transform.position = new Vector3(toBePlacedVector.x, 0, toBePlacedVector.y);
-    }
-
-    private void Update()
-    {
-        prevAngle = angle;
     }
 
     private void GoLeft()
