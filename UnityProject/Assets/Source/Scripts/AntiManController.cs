@@ -16,8 +16,8 @@ public class AntiManController : MonoBehaviour
 
     [Range(0, 1)]
     public float targetLineLerp = 0.5f;
-    [Range(0, 0.1f)]
-    public float pushbackPlayerDistance = 0.01f;
+    [Range(100f, 10000f)]
+    public float duckPushForce = 0.01f;
 
 	public bool isBoosting = false;
 	public float boostTime = 2f;
@@ -90,7 +90,7 @@ public class AntiManController : MonoBehaviour
             ParticleSystem.MainModule mainModule = waveParticles.main;
             mainModule.startSpeed = 10f * inputLength;
 
-            WavePlane.Get.CreateWave(transform.position, targetLineForward.normalized);
+            //WavePlane.Get.CreateWave(transform.position, targetLineForward.normalized);
         }
         else if (isWaving)
         {
@@ -109,11 +109,11 @@ public class AntiManController : MonoBehaviour
 
         foreach (Collider collider in gameObjectsInRange)
         {
-            Duck duck = collider.GetComponent<Duck>();
+            Rigidbody duck = collider.GetComponent<Rigidbody>();
 
             if (duck)
             {
-                duck.distance += pushbackPlayerDistance * inputLength;
+                duck.AddForce(targetLineForward * duckPushForce * inputLength, ForceMode.Force);
             }
         }
     }

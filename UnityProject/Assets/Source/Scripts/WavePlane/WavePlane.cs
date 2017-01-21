@@ -34,7 +34,7 @@ public class WavePlane : MonoBehaviour
 
     public void CreateWave(Vector3 position, Vector3 direction)
     {
-        if (DeWaveTimer < 0.2f)
+        if (DeWaveTimer < 0.5f)
             return;
 
         DeWaveTimer = 0.0f;
@@ -59,7 +59,7 @@ public class WavePlane : MonoBehaviour
         foreach (Wave wave in Waves)
         {
             wave.position += wave.direction * Time.deltaTime * wave.speed;
-            if (wave.position.magnitude > 15.0f)
+            if (wave.position.magnitude > 10f)
             {
                 Waves.Remove(wave);
                 break;
