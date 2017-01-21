@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour {
 	void Update () {
         foreach (Duck d in duckArray)
         {
-            if (Vector3.Distance(d.transform.position, new Vector3(0, 0, 0)) >= DuckGameGlobalConfig.winDistance)
+            if (Vector3.Distance(d.transform.position, new Vector3(0, 0, 0)) <= DuckGameGlobalConfig.winDistance)
             {
                 PlayerWon(d.playerName);
             }
@@ -24,7 +24,6 @@ public class GameManager : MonoBehaviour {
 
     void PlayerWon(string name)
     {
-
-
+        Debug.Log(name + "won");
     }
 }
