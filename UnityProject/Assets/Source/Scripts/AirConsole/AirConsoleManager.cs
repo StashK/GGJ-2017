@@ -466,6 +466,7 @@ public class AirConsoleManager : MonoBehaviour {
 
             Transform duck = Instantiate(JPL.Core.Prefabs.duck);
             duck.name = "duck_" + playerId;
+            duck.GetComponent<Duck>().playerId = playerId;
             
         }
 

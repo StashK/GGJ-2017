@@ -8,6 +8,12 @@ public class AntiManController : MonoBehaviour {
 	public float inputLength;
 
 	public Vector3 targetLineForward;
+	public float targetLineDistance;
+
+	[Range(0, 1)]
+	public float targetLineLerp = 0.5f;
+	[Range(0, 0.2f)]
+	public float pushbackPlayerDistance = 0.01f;
 
 	public ParticleSystem waveParticles;
 
@@ -28,10 +34,10 @@ public class AntiManController : MonoBehaviour {
 
 	void UpdateWaving()
 	{
-		targetLineForward = new Vector3(inputVector.x, 0, -inputVector.y);
-		inputLength = targetLineForward.magnitude;
+		targetLineForward = Vector3.Slerp(targetLineForward, new Vector3(inputVector.x, 0, -inputVector.y), targetLineLerp);
+		inputLength = Mathf.Min(1, targetLineForward.magnitude);
 
-		Debug.Log("InputLenght: " + inputLength);
+		//Debug.Log("InputLenght: " + inputLength);
 
 		// Toggle isWaving and particles
 		if (inputLength > 0.05f)
@@ -40,6 +46,10 @@ public class AntiManController : MonoBehaviour {
 			isWaving = true;
 			if(!waveParticles.isEmitting)
 				waveParticles.Play();
+			ParticleSystem.EmissionModule emissionModule = waveParticles.emission;
+			emissionModule.rateOverTimeMultiplier = inputLength * 50f;
+			ParticleSystem.MainModule mainModule = waveParticles.main;
+			mainModule.startSpeed = 30f * inputLength;
 		}
 		else if(isWaving)
 		{
@@ -51,7 +61,9 @@ public class AntiManController : MonoBehaviour {
 
 	void PushBackDucks()
 	{
-		Collider[] gameObjectsInRange = Physics.OverlapCapsule(transform.position, transform.position + targetLineForward.normalized, 1.5f);
+		Collider[] gameObjectsInRange = Physics.OverlapCapsule(transform.position, transform.position + targetLineForward.normalized * targetLineDistance * inputLength, 1.5f);
+
+		Debug.DrawRay(transform.position, targetLineForward.normalized * targetLineDistance * inputLength, Color.red);
 
 		foreach (Collider collider in gameObjectsInRange)
 		{
@@ -60,7 +72,7 @@ public class AntiManController : MonoBehaviour {
 
 			if(duck)
 			{
-				duck.distance += 0.1f;
+				duck.distance += 0.1f * inputLength;
 			}
 			
 		}
