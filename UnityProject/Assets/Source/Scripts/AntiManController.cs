@@ -16,8 +16,8 @@ public class AntiManController : MonoBehaviour
 
     [Range(0, 1)]
     public float targetLineLerp = 0.5f;
-    [Range(100f, 10000f)]
-    public float duckPushForce = 0.01f;
+    [Range(0f, 10f)]
+    public float duckPushForce;
 
 	public bool isBoosting = false;
 	public float boostTime = 2f;
@@ -60,7 +60,7 @@ public class AntiManController : MonoBehaviour
 			// Set boost
 			boostTimer -= Time.deltaTime;
 			if (boostTimer > 0f)
-				inputLength *= 2f;
+				inputLength *= 1.5f;
 			else
 				isBoosting = false;
 		}
@@ -102,20 +102,18 @@ public class AntiManController : MonoBehaviour
 
     void PushBackDucks()
     {
-        Collider[] gameObjectsInRange = Physics.OverlapCapsule(transform.position, transform.position + targetLineForward.normalized * targetLineDistance * inputLength, 1.5f);
+        Collider[] gameObjectsInRange = Physics.OverlapCapsule(transform.position, transform.position + targetLineForward.normalized * targetLineDistance * inputLength, 2.5f);
 
         if (drawDebugLines)
-            Debug.DrawRay(transform.position, targetLineForward.normalized * targetLineDistance * inputLength, Color.red);
+            Debug.DrawRay(transform.position, (targetLineForward.normalized * targetLineDistance) * inputLength, Color.red);
 
         foreach (Collider collider in gameObjectsInRange)
         {
-            Rigidbody RB = collider.GetComponent<Rigidbody>();
             Duck duck = collider.GetComponent<Duck>();
 
 			if (duck && !duck.IsDeath())
             {
-				if(RB)
-					RB.AddForce(targetLineForward * duckPushForce * inputLength, ForceMode.Force);
+				duck.displacementVector = duckPushForce * (-targetLineForward * inputLength * targetLineDistance);
             }
         }
     }
