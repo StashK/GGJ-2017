@@ -80,6 +80,8 @@ public class AirConsoleManager : MonoBehaviour {
     void LateUpdate ()
     {
         ResetInput();
+
+        
     }
 
     void OnLevelWasLoaded()
@@ -112,7 +114,7 @@ public class AirConsoleManager : MonoBehaviour {
 
     void OnMessage(int from, JToken data)
     {
-        Debug.Log(data.ToString());
+        //Debug.Log(data.ToString());
 
         foreach (Player p in playerList)
         {
@@ -511,28 +513,8 @@ public class AirConsoleManager : MonoBehaviour {
         {
             switch (key)
             {
-                //// Gameplay keys
-                //case InputAction.GamePlay.Jump:
-                //    return input.jump;
-                //case InputAction.GamePlay.Dash:
-                //    return input.jump;
-                //case InputAction.GamePlay.Shield:
-                //    return input.shield;
-                //case InputAction.GamePlay.Grab:
-                //    return input.grab;
-                //case InputAction.GamePlay.Pause:
-                //    return input.start;
-                //case InputAction.GamePlay.Exit:
-                //    return input.select;
-                //// Menu keys
-                //case InputAction.Menu.Start:
-                //    return input.start;
-                //case InputAction.Menu.UISubmit:
-                //    return input.jump;
-                //case InputAction.Menu.UICancel:
-                //    return input.grab;
                 case InputAction.Gameplay.MoveLeft:
-                    return input.moveLeft;
+                    return input.moveLeftDown;
                 case InputAction.Gameplay.MoveRight:
                     return input.moveRight;
                 case InputAction.Gameplay.WeaponLeft:
@@ -546,7 +528,34 @@ public class AirConsoleManager : MonoBehaviour {
 
         public bool GetButtonUp (string key)
         {
-            return GetButtonDown(key);
+            switch (key)
+            {
+                case InputAction.Gameplay.MoveLeft:
+                    return input.moveLeftUp;
+                case InputAction.Gameplay.MoveRight:
+                    return input.moveRight;
+                case InputAction.Gameplay.WeaponLeft:
+                    return input.weaponLeft;
+                case InputAction.Gameplay.WeaponRight:
+                    return input.weaponRight;
+            }
+            return false;
+        }
+
+        public bool GetButton (string key)
+        {
+            switch (key)
+            {
+                case InputAction.Gameplay.MoveLeft:
+                    return input.moveLeft;
+                case InputAction.Gameplay.MoveRight:
+                    return input.moveRight;
+                case InputAction.Gameplay.WeaponLeft:
+                    return input.weaponLeft;
+                case InputAction.Gameplay.WeaponRight:
+                    return input.weaponRight;
+            }
+            return false;
         }
 
         public float GetAxis (string key)
@@ -566,11 +575,21 @@ public class AirConsoleManager : MonoBehaviour {
 
     public class Input
     {
-
         public bool moveLeft { get; private set; }
+        public bool moveLeftUp { get; private set; }
+        public bool moveLeftDown { get; private set; }
+
         public bool moveRight { get; private set; }
+        public bool moveRightUp { get; private set; }
+        public bool moveRightDown { get; private set; }
+
         public bool weaponLeft { get; private set; }
+        public bool weaponLeftUp { get; private set; }
+        public bool weaponLeftDown { get; private set; }
+
         public bool weaponRight { get; private set; }
+        public bool weaponRightUp { get; private set; }
+        public bool weaponRightDown { get; private set; }
 
         /// <summary>
         /// processes the raw data
@@ -590,20 +609,64 @@ public class AirConsoleManager : MonoBehaviour {
             if (data.Value<string>("element") == "move-left")
             {
                 moveLeft = data["data"].Value<bool>("pressed");
+
+                if (data["data"].Value<bool>("pressed"))
+                {
+                    moveLeftDown = true;
+                    moveLeftUp = false;
+                }
+                else
+                {
+                    moveLeftDown = false;
+                    moveLeftUp = true;
+                }
             }
 
             if (data.Value<string>("element") == "move-right")
             {
                 moveRight = data["data"].Value<bool>("pressed");
+
+                if (data["data"].Value<bool>("pressed"))
+                {
+                    moveRightDown = true;
+                    moveRightUp = false;
+                }
+                else
+                {
+                    moveRightDown = false;
+                    moveRightUp = true;
+                }
             }
 
             if (data.Value<string>("element") == "weapon-left")
             {
                 weaponLeft = data["data"].Value<bool>("weapon-left");
+
+                if (data["data"].Value<bool>("pressed"))
+                {
+                    weaponLeftDown = true;
+                    weaponLeftUp = false;
+                }
+                else
+                {
+                    weaponLeftDown = false;
+                    weaponLeftUp = true;
+                }
             }
             if (data.Value<string>("element") == "weapon-right")
             {
                 weaponRight = data["data"].Value<bool>("pressed");
+
+                if (data["data"].Value<bool>("pressed"))
+                {
+                    weaponRightDown = true;
+                    weaponRightUp = false;
+                }
+                else
+                {
+                    weaponRightDown = false;
+                    weaponRightUp = true;
+                }
             }
         }
 
@@ -621,6 +684,14 @@ public class AirConsoleManager : MonoBehaviour {
 
         public void Reset(bool force = false)
         {
+            moveLeftDown = false;
+            moveLeftUp = false;
+            moveRightDown = false;
+            moveRightUp = false;
+            weaponLeftDown = false;
+            weaponLeftUp = false;
+            weaponRightDown = false;
+            weaponRightUp = false;
             //if (Game.gameState == GAMESTATE.PLAYING || force)
             //{
             //    // reset
