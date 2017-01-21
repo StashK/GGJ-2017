@@ -29,7 +29,7 @@ public class HexGrid : MonoBehaviour
         SpawnGrid();
 
         RemoveOuterRing(20f);
-        StartCoroutine(Test());
+        //StartCoroutine(Test());
     }
 
     IEnumerator Test ()
@@ -40,6 +40,11 @@ public class HexGrid : MonoBehaviour
 
     private void InitGrid ()
     {
+        x = (int)((int)DuckGameGlobalConfig.startDistance * 2 / radius) + 1;
+        y = (int)((int)DuckGameGlobalConfig.startDistance * 2 / radius) + 1;
+
+        activeRadius = DuckGameGlobalConfig.startDistance;
+
         float unitLength = (useAsInnerCircleRadius) ? (radius / (Mathf.Sqrt(3) / 2)) : radius;
 
         offsetX = unitLength * Mathf.Sqrt(3);
