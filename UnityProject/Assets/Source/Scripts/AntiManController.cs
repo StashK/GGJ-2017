@@ -17,6 +17,7 @@ public class AntiManController : MonoBehaviour {
 
 	public ParticleSystem waveParticles;
 
+	public bool drawDebugLines;
 	public bool isWaving;
 
 	// Use this for initialization
@@ -34,7 +35,7 @@ public class AntiManController : MonoBehaviour {
 
 	void UpdateWaving()
 	{
-		targetLineForward = Vector3.Slerp(targetLineForward, new Vector3(inputVector.x, 0, -inputVector.y), targetLineLerp);
+		targetLineForward = Vector3.Slerp(targetLineForward, new Vector3(inputVector.x, 0, inputVector.y), targetLineLerp);
 		inputLength = Mathf.Min(1, targetLineForward.magnitude);
 
 		//Debug.Log("InputLenght: " + inputLength);
@@ -63,7 +64,8 @@ public class AntiManController : MonoBehaviour {
 	{
 		Collider[] gameObjectsInRange = Physics.OverlapCapsule(transform.position, transform.position + targetLineForward.normalized * targetLineDistance * inputLength, 1.5f);
 
-		Debug.DrawRay(transform.position, targetLineForward.normalized * targetLineDistance * inputLength, Color.red);
+		if(drawDebugLines)
+			Debug.DrawRay(transform.position, targetLineForward.normalized * targetLineDistance * inputLength, Color.red);
 
 		foreach (Collider collider in gameObjectsInRange)
 		{

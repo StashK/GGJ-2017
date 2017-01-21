@@ -10,10 +10,12 @@ public class GameManager : MonoBehaviour {
     private bool isPreFallOffFinished = false;
     public float lastDropOffTime;
     public HexGrid hexGrid;
+    private float maxDistance;
 	// Use this for initialization
 	void Start () {
        duckList = FindObjectsOfType<Duck>().ToList<Duck>();
         startTime = Time.time;
+        maxDistance = DuckGameGlobalConfig.startDistance;
 	}
 	
 	// Update is called once per frame
@@ -35,8 +37,8 @@ public class GameManager : MonoBehaviour {
                 {
                     lastDropOffTime = Time.time;
                     Duck furtherstDuck = GetFurtherstDuck();
-                    furtherstDuck.isDeath = true;
-                    Debug.Log(Vector3.Distance(furtherstDuck.transform.position, Vector3.zero));
+                    furtherstDuck.Kill();
+                    maxDistance = Vector3.Distance(furtherstDuck.transform.position, Vector3.zero);
                     hexGrid.SetFalloff(Vector3.Distance(furtherstDuck.transform.position, Vector3.zero));
                     Debug.Log("someone lost");
                 }
@@ -44,7 +46,11 @@ public class GameManager : MonoBehaviour {
 
             foreach (Duck d in duckList)
             {
-                if (Vector3.Distance(d.transform.position, new Vector3(0, 0, 0)) <= DuckGameGlobalConfig.winDistance)
+                float duckDistance = Vector3.Distance(d.transform.position, new Vector3(0, 0, 0));
+                if (duckDistance >= maxDistance) //if duck distance is higher than max distance, kill the duck
+                    d.Kill();
+
+                if (duckDistance <= DuckGameGlobalConfig.winDistance)
                 {
                     PlayerWon(d.playerName);
                     return;
@@ -67,7 +73,7 @@ public class GameManager : MonoBehaviour {
         returnDuck = duckList[0];
         foreach (Duck d in duckList)
         {
-            if (!d.isDeath)
+            if (!d.IsDeath())
             {
                 if (Vector3.Distance(d.transform.position, new Vector3(0, 0, 0)) > furtherstDistance)
                 {
