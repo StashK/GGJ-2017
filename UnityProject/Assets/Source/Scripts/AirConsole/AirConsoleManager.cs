@@ -26,6 +26,18 @@ public class AirConsoleManager : MonoBehaviour {
             return i;
         }
     }
+    public List<Player> ActivePlayers ()
+    {
+        List<Player> p = new List<Player>();
+
+        foreach (Player player in playerList)
+        {
+            if(player.state == Player.STATE.CLAIMED)
+                p.Add(player);
+        }
+
+        return p;
+    }
 
     #region UNITY_CALLBACKS
     void OnEnable ()
@@ -464,9 +476,9 @@ public class AirConsoleManager : MonoBehaviour {
             // init Input
             input = new Input();
 
-            Transform duck = Instantiate(JPL.Core.Prefabs.duck);
-            duck.name = "duck_" + playerId;
-            duck.GetComponent<Duck>().playerId = playerId;
+            //Transform duck = Instantiate(JPL.Core.Prefabs.duck);
+            //duck.name = "duck_" + playerId;
+            //duck.GetComponent<Duck>().playerId = playerId;
             
         }
 
