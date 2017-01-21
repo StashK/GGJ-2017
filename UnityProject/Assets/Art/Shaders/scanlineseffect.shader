@@ -1,6 +1,5 @@
-﻿Shader "Hidden/RGBLines"
+﻿Shader "Hidden/scanlineseffect"
 {
-
 	Properties{
 		_MainTex("Base (RGB)", 2D) = "white" {}
 	_MaskTex("Mask texture", 2D) = "white" {}
