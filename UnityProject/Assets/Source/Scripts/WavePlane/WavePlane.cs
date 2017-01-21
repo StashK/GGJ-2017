@@ -2,14 +2,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public class Wave
+{
+    public Vector3 position;
+    public Vector3 direction;
+}
+
 public class WavePlane : MonoBehaviour
 {
-    public Transform player;
     public float HeightMutliplier = 0.01f;
     public float HeightPower = 2;
+    public List<Vector3> Waves = new List<Vector3>();
 
     // Use this for initialization
     void Start()
+    {
+
+    }
+
+    void CreateWave(Vector3 position, Vector3 direction)
     {
 
     }
@@ -34,7 +45,11 @@ public class WavePlane : MonoBehaviour
             waveHeight = Mathf.Clamp(waveHeight, 0.0f, 1.0f);
             waveHeight = 1.0f - waveHeight;
 
-            vertices[i].y = transform.position.y + waveHeight;
+            Vector3 directional = worldPt - playerPos;
+            float dirScale = Vector3.Dot(Vector3.forward, directional) * 0.1f;
+
+
+            vertices[i].y = transform.position.y + (waveHeight * 3.0f * dirScale);
             i++;
         }
         mesh.vertices = vertices;
