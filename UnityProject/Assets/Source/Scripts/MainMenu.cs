@@ -71,6 +71,8 @@ public class MainMenu : MonoBehaviour {
 			lastSelectTime = Time.time;
 			iconSelected = true;
 			EventSystem.current.SetSelectedGameObject(DuckOffIcon.gameObject);
+			startMenuOpen = false;
+			startMenu.SetActive(false);
 		}
 	}
 }

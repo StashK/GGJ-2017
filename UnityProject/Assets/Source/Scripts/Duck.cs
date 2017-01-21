@@ -98,8 +98,8 @@ public class Duck : MonoBehaviour, IComparable
 
     void Update()
     {
-        // transform.LookAt(GetComponent<AntiManController>().transform);
-
+		// transform.LookAt(GetComponent<AntiManController>().transform);
+		transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one * Mathf.Pow(fatness, -3), 0.1f);
         if (airController.GetButtonDown(InputAction.Gameplay.WeaponLeft))
         {
             Debug.Log("FSDFSDF");
@@ -110,6 +110,18 @@ public class Duck : MonoBehaviour, IComparable
                 Size = 32
             });
         }
+    }
+
+    public float GetTerrainHeight(float xPos, float zPos)
+    {
+        int x = (int)(xPos) + 25;
+        int z = (int)(zPos) + 25;
+
+        int i = x + z * 25;
+
+        float height = WavePlane.HeightMap[i];
+
+        return height;
     }
 
     private void GoLeft()
@@ -127,4 +139,13 @@ public class Duck : MonoBehaviour, IComparable
         isDeath = true;
 
     }
+
+	public void OnCollisionEnter(Collision other)
+	{
+		if(other.collider.tag == "BreadPickup")
+		{
+			fatness++;
+			Destroy(other.gameObject);
+		}
+	}
 }
