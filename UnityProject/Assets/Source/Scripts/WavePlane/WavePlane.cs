@@ -66,18 +66,18 @@ public class WavePlane : MonoBehaviour
                 break;
             }
         }
+
         Mesh mesh = GetComponent<MeshFilter>().mesh;
         Vector3[] vertices = mesh.vertices;
         int i = 0;
 
         while (i < vertices.Length)
         {
+            Vector3 worldPt = transform.TransformPoint(vertices[i]);
+            worldPt.y = 0.0f;
             float waveHeight = 0.0f;
             foreach (Wave wave in Waves)
             {
-                Vector3 worldPt = transform.TransformPoint(vertices[i]);
-                worldPt.y = 0.0f;
-
                 Vector3 playerPos = wave.position;
                 playerPos.y = 0.0f;
 
@@ -87,7 +87,7 @@ public class WavePlane : MonoBehaviour
                 waveHeight = Mathf.Clamp(waveHeight, 0.0f, 1.0f) * 1.5f;
             }
 
-            vertices[i].y += transform.position.y + waveHeight;
+            vertices[i].y += waveHeight;
             i++;
         }
         mesh.vertices = vertices;
