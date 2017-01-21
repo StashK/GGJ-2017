@@ -8,7 +8,9 @@ using UnityEngine.UI;
 public class MainMenu : MonoBehaviour {
 
 	bool connectMenuOpen;
+	bool startMenuOpen;
 	public GameObject connectMenu;
+	public GameObject startMenu;
 	public Button DuckOffIcon;
 
 	float lastSelectTime = 0f;
@@ -44,6 +46,12 @@ public class MainMenu : MonoBehaviour {
 			connectMenu.SetActive(false);
 			connectMenuOpen = false;
 		}
+	}
+
+	public void ToggleStartMenu()
+	{
+		startMenuOpen = !startMenuOpen;
+		startMenu.SetActive(startMenuOpen);
 	}
 
 	public void SelectIcon()

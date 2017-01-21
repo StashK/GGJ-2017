@@ -38,6 +38,10 @@ public class ConnectMenu : MonoBehaviour {
 		ActivateLines();
 	}
 
+	public void OnDrag() {
+		transform.position = Input.mousePosition;
+	}
+
 	void ActivateLines()
 	{
 		int activePlayers = AirConsoleManager.Instance.ActivePlayers().Count;
