@@ -48,23 +48,23 @@ public class Duck : MonoBehaviour, IComparable
     void FixedUpdate()
     {
         if (!isDeath)
+            return;
+
+        distance -= DuckGameGlobalConfig.distanceSpeed * Time.deltaTime;
+        
+        if (airController.GetButtonDown(InputAction.Gameplay.MoveLeft))
         {
-            distance -= DuckGameGlobalConfig.distanceSpeed * Time.deltaTime;
-
-            if (airController.GetButtonDown(InputAction.Gameplay.MoveLeft))
-            {
-                GoLeft();
-            }
-
-            if (airController.GetButtonDown(InputAction.Gameplay.MoveRight))
-            {
-                GoRight();
-            }
-
-            Vector2 toBePlacedVector = new Vector2(1.0f, 0.0f);
-            toBePlacedVector = toBePlacedVector.Rotate(angle) * distance * DuckGameGlobalConfig.startDistance;
-            transform.position = new Vector3(toBePlacedVector.x, 0, toBePlacedVector.y);
+            GoLeft();
         }
+        
+        if (airController.GetButtonDown(InputAction.Gameplay.MoveRight))
+        {
+            GoRight();
+        }
+        
+        Vector2 toBePlacedVector = new Vector2(1.0f, 0.0f);
+        toBePlacedVector = toBePlacedVector.Rotate(angle) * distance * DuckGameGlobalConfig.startDistance;
+        transform.position = new Vector3(toBePlacedVector.x, 0, toBePlacedVector.y);
     }
 
     private void Update()
@@ -90,7 +90,6 @@ public class Duck : MonoBehaviour, IComparable
 
     void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("OnCollisionEnter");
         if (collision.collider.tag == "Player")
         {
             Debug.Log(collision.contacts[0].point);

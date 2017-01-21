@@ -13,14 +13,20 @@ public class GameManager : MonoBehaviour {
     private float maxDistance;
 	// Use this for initialization
 	void Start () {
-       duckList = FindObjectsOfType<Duck>().ToList<Duck>();
+        foreach (AirConsoleManager.Player p in AirConsoleManager.Instance.ActivePlayers())
+        {
+            Transform instantiatedDuckTransform = Instantiate(JPL.Core.Prefabs.duck, new Vector3(10.0f, 0, 0), Quaternion.identity);
+            instantiatedDuckTransform.GetComponent<Duck>().playerId = p.PlayerId;
+            instantiatedDuckTransform.GetComponent<Duck>().playerName = p.playerName;
+            instantiatedDuckTransform.GetComponent<Duck>().angle = Random.Range(0.0f, 360.0f);
+            duckList.Add(instantiatedDuckTransform.GetComponent<Duck>());
+        }
         startTime = Time.time;
         maxDistance = DuckGameGlobalConfig.startDistance;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        duckList = FindObjectsOfType<Duck>().ToList<Duck>(); //Hackyhacky get ducks
 
         if (!isGameFinished)
         {
