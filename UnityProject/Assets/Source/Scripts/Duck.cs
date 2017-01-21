@@ -13,9 +13,15 @@ public class Duck : MonoBehaviour, IComparable
     [Range(0, 1)]
     public float distance = 1.0f;
 
-    public bool isDeath = false;
+    private bool isDeath = false;
 
     private float prevAngle;
+
+    public bool IsDeath()
+    {
+        return isDeath;
+
+    }
 
     public int CompareTo(object obj)
     {
@@ -74,6 +80,12 @@ public class Duck : MonoBehaviour, IComparable
     private void GoRight()
     {
         angle += DuckGameGlobalConfig.moveSpeed * Time.deltaTime;
+    }
+
+    public void Kill()
+    {
+        isDeath = true;
+
     }
 
     void OnCollisionEnter(Collision collision)
