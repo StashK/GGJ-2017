@@ -47,10 +47,10 @@ public class AirConsoleManager : MonoBehaviour {
         Instance = this;
 
         // populate players
-        for (int i = 0; i < 4; i++)
-        {
-            playerList.Add(new Player(i));
-        }
+        //for (int i = 0; i < 4; i++)
+        //{
+        //    playerList.Add(new Player(i));
+        //}
 
     }
 
@@ -136,7 +136,7 @@ public class AirConsoleManager : MonoBehaviour {
         Debug.Log("Device: " + deviceId + " connected. " + AirConsole.instance.GetNickname(deviceId));
 
         // trying to find a player to reconnect
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < playerList.Count; i++)
         {
             if (playerList[i].state == Player.STATE.DISCONNECTED && playerList[i].DeviceId == deviceId)
             {
@@ -148,7 +148,7 @@ public class AirConsoleManager : MonoBehaviour {
             }
         }
         // trying to find a player to claim
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < playerList.Count; i++)
         {
             if (playerList[i].state == Player.STATE.UNCLAIMED)
             {
@@ -160,6 +160,8 @@ public class AirConsoleManager : MonoBehaviour {
             }
         }
 
+        playerList.Add(new Player(playerList.Count));
+        playerList[playerList.Count -1].Claim(deviceId);
         // create device
         AddDevice(deviceId);
     }

@@ -20,6 +20,7 @@ public class Duck : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
+        if (airController == null) return;
 
         distance -= DuckGameGlobalConfig.distanceSpeed * Time.deltaTime;
 
