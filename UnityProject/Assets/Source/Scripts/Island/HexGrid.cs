@@ -29,13 +29,13 @@ public class HexGrid : MonoBehaviour
         SpawnGrid();
 
         RemoveOuterRing(20f);
-        //StartCoroutine(Test());
+        StartCoroutine(Test());
     }
 
     IEnumerator Test ()
     {
         yield return new WaitForSeconds(5f);
-        SetFalloff(15f);
+        SetFalloff(5f);
     }
 
     private void InitGrid ()
