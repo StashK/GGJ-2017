@@ -34,7 +34,7 @@ public class WavePlane : MonoBehaviour
             waveHeight = Mathf.Clamp(waveHeight, 0.0f, 1.0f);
             waveHeight = 1.0f - waveHeight;
 
-            vertices[i].y = waveHeight;
+            vertices[i].y = transform.position.y + waveHeight;
             i++;
         }
         mesh.vertices = vertices;
