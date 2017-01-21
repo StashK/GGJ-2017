@@ -15,5 +15,8 @@ public class Bread : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		transform.position += direction * moveSpeed * Time.deltaTime;
+
+		if (transform.position.magnitude > 50f)
+			Destroy(this.gameObject);
 	}
 }
