@@ -12,7 +12,7 @@ public class Duck : MonoBehaviour, IComparable {
     [Range(0,1)]
     public float distance = 1.0f;
 
-    private bool isDeath = false;
+    public bool isDeath = false;
 
     private float prevAngle;
 
@@ -32,7 +32,6 @@ public class Duck : MonoBehaviour, IComparable {
 	void Start () {
         airController = AirConsoleManager.Instance.GetPlayer(playerId);
         prevAngle = angle;
-
         PastelGenerator.Lightness = 0.3f;
         GetComponent<Renderer>().material.color = PastelGenerator.Generate();
 	}
