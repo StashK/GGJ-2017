@@ -34,6 +34,10 @@ public class MeshGen : MonoBehaviour {
 
     IEnumerator Test ()
     {
+        yield return new WaitForEndOfFrame();
+        //yield return Ninja.JumpToUnity;
+        //vertices = GetComponent<MeshFilter>().mesh.vertices;
+        //yield return Ninja.JumpBack;
         curDistance = distance;
 
         int vIndex = 0;
@@ -60,7 +64,7 @@ public class MeshGen : MonoBehaviour {
         yield return Ninja.JumpToUnity;
 
         //GetComponent<MeshFilter>().mesh.Clear();
-        GetComponent<MeshFilter>().mesh.vertices = vertices;
+        GetComponent<MeshFilter>().sharedMesh.vertices = vertices;
 
         this.StartCoroutineAsync(Test());
     }
@@ -107,16 +111,18 @@ public class MeshGen : MonoBehaviour {
         m.uv = uv;
         m.RecalculateNormals();
 
-        GetComponent<MeshFilter>().mesh = m;
+        GetComponent<MeshFilter>().sharedMesh = m;
     }
     
     public class Quad
     {
         public bool active = true;
-        public bool active1 { get { return center1.magnitude < MeshGen.curDistance; } }
-        public bool active2 { get { return center2.magnitude < MeshGen.curDistance; } }
+        public bool active1 { get { return center1Magnitude < MeshGen.curDistance; } }
+        public bool active2 { get { return center2Magnitude < MeshGen.curDistance; } }
         public Vector3 center1;
+        public float center1Magnitude;
         public Vector3 center2;
+        public float center2Magnitude;
 
         private Vector3[] originalVertices = new Vector3[6];
         public Vector3[] vertices = new Vector3[6];
@@ -135,6 +141,8 @@ public class MeshGen : MonoBehaviour {
             originalVertices = (Vector3[])vertices.Clone();
             center1 = (originalVertices[0] + originalVertices[1] + originalVertices[2]) / 3f;
             center2 = (originalVertices[3] + originalVertices[4] + originalVertices[5]) / 3f;
+            center1Magnitude = center1.magnitude;
+            center2Magnitude = center2.magnitude;
 
             for (int i = 0; i < 6; i++)
             {
@@ -157,9 +165,9 @@ public class MeshGen : MonoBehaviour {
             }
             else
             {
-                vertices[2] = Vector3.zero;
-                vertices[1] = Vector3.zero;
-                vertices[0] = Vector3.zero;
+                vertices[2] = (center1 + ((vertices[2] - center1)) * 0.9f);
+                vertices[1] = (center1 + ((vertices[1] - center1)) * 0.9f);
+                vertices[0] = (center1 + ((vertices[0] - center1)) * 0.9f);
             }
 
             if (active2)
@@ -170,9 +178,9 @@ public class MeshGen : MonoBehaviour {
             }
             else
             {
-                vertices[5] = Vector3.zero;
-                vertices[4] = Vector3.zero;
-                vertices[3] = Vector3.zero;
+                vertices[5] = (center2 + ((vertices[5] - center2)) * 0.9f);
+                vertices[4] = (center2 + ((vertices[4] - center2)) * 0.9f);
+                vertices[3] = (center2 + ((vertices[3] - center2)) * 0.9f);
             }
         }
     }
