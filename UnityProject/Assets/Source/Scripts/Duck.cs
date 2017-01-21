@@ -98,15 +98,14 @@ public class Duck : MonoBehaviour, IComparable
 
     void Update()
     {
-		// transform.LookAt(GetComponent<AntiManController>().transform);
-		transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one * Mathf.Pow(fatness, -3), 0.1f);
+        // transform.LookAt(GetComponent<AntiManController>().transform);
+        transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one * Mathf.Pow(fatness, -3), 0.1f);
         if (airController.GetButtonDown(InputAction.Gameplay.WeaponLeft))
         {
-            Debug.Log("FSDFSDF");
             SubtitleRenderer.AddSubtitle(new DuckTitles
             {
                 Text = "Quack !",
-                Colour = PastelGenerator.Generate(),
+                Colour = transform.Find("Ducky_Body").GetComponent<Renderer>().material.color,
                 Size = 32
             });
         }
