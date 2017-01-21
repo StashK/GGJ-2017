@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour {
 	void Update () {
         if (!isGameFinished)
         {
-            if(!isPreFallOffFinished && Time.time >= startTime + DuckGameGlobalConfig.preDropOffTime)
+            if(!isPreFallOffFinished && Time.time >= startTime + DuckGameGlobalConfig.preDropOffTime) //Duck dieing starts
             {
                 isPreFallOffFinished = true;
                 lastDropOffTime = Time.time;
@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour {
 
             if (isPreFallOffFinished)
             {
-                if (Time.time >= lastDropOffTime + DuckGameGlobalConfig.DropOfftime)
+                if (Time.time >= lastDropOffTime + DuckGameGlobalConfig.DropOfftime) //Furthers duck dies 
                 {
                     lastDropOffTime = Time.time;
                     GetFurtherstDuck().isDeath = true;
