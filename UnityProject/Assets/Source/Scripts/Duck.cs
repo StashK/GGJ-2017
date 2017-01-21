@@ -1,43 +1,65 @@
 ﻿using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Duck : MonoBehaviour {
+public class Duck : MonoBehaviour, IComparable
+{
 
     private AirConsoleManager.Player airController;
     public int playerId;
     public string playerName;
     public float angle = 0;
-    [Range(0,1)]
+    [Range(0, 1)]
     public float distance = 1.0f;
 
+    public bool isDeath = false;
+
     private float prevAngle;
-	// Use this for initialization
-	void Start () {
+
+    public int CompareTo(object obj)
+    {
+        if (obj == null) return 1;
+
+        Duck otherDuck = obj as Duck;
+        if (otherDuck != null)
+        {
+            return this.distance.CompareTo(otherDuck.distance);
+        }
+
+        return 0;
+    }
+    // Use this for initialization
+    void Start()
+    {
         airController = AirConsoleManager.Instance.GetPlayer(playerId);
         prevAngle = angle;
-	}
-	
-	// Update is called once per frame
-	void FixedUpdate () {
-        if (airController == null) return;
+        PastelGenerator.Lightness = 0.3f;
+        GetComponent<Renderer>().material.color = PastelGenerator.Generate();
+    }
 
-        distance -= DuckGameGlobalConfig.distanceSpeed * Time.deltaTime;
-
-        if (airController.GetButtonDown(InputAction.Gameplay.MoveLeft))
+    // Update is called once per frame
+    void FixedUpdate()
+    {
+        if (!isDeath)
         {
-            GoLeft();
-        }
+            distance -= DuckGameGlobalConfig.distanceSpeed * Time.deltaTime;
 
-        if (airController.GetButtonDown(InputAction.Gameplay.MoveRight))
-        {
-            GoRight();
-        }
+            if (airController.GetButtonDown(InputAction.Gameplay.MoveLeft))
+            {
+                GoLeft();
+            }
 
-        Vector2 toBePlacedVector = new Vector2(1.0f, 0.0f);
-        toBePlacedVector = toBePlacedVector.Rotate(angle) * distance * DuckGameGlobalConfig.startDistance;
-        transform.position = new Vector3(toBePlacedVector.x, 0, toBePlacedVector.y);
-	}
+            if (airController.GetButtonDown(InputAction.Gameplay.MoveRight))
+            {
+                GoRight();
+            }
+
+            Vector2 toBePlacedVector = new Vector2(1.0f, 0.0f);
+            toBePlacedVector = toBePlacedVector.Rotate(angle) * distance * DuckGameGlobalConfig.startDistance;
+            transform.position = new Vector3(toBePlacedVector.x, 0, toBePlacedVector.y);
+        }
+    }
 
     private void Update()
     {

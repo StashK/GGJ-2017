@@ -8,15 +8,10 @@ public class AntiManController : MonoBehaviour {
 	public float inputLength;
 
 	public Vector3 targetLineForward;
-	public float targetLineDistance;
-
-	[Range(0, 1)]
-	public float targetLineLerp = 0.5f;
-	[Range(0, 1)]
-	public float pushbackPlayerDistance = 0.01f;
 
 	public ParticleSystem waveParticles;
-	public bool isWaving = false;
+
+	public bool isWaving;
 
 	// Use this for initialization
 	void Start () {
@@ -33,10 +28,10 @@ public class AntiManController : MonoBehaviour {
 
 	void UpdateWaving()
 	{
-		targetLineForward = Vector3.Slerp(targetLineForward, new Vector3(inputVector.x, 0, -inputVector.y), targetLineLerp);
+		targetLineForward = new Vector3(inputVector.x, 0, -inputVector.y);
 		inputLength = targetLineForward.magnitude;
 
-		//Debug.Log("InputLength: " + inputLength);
+		Debug.Log("InputLenght: " + inputLength);
 
 		// Toggle isWaving and particles
 		if (inputLength > 0.05f)
@@ -56,19 +51,18 @@ public class AntiManController : MonoBehaviour {
 
 	void PushBackDucks()
 	{
-		Collider[] gameObjectsInRange = Physics.OverlapCapsule(transform.position, transform.position + targetLineForward.normalized * targetLineDistance, 1.5f);
-		Debug.DrawRay(transform.position, targetLineForward.normalized * targetLineDistance, Color.red);
+		Collider[] gameObjectsInRange = Physics.OverlapCapsule(transform.position, transform.position + targetLineForward.normalized, 1.5f);
+
 		foreach (Collider collider in gameObjectsInRange)
 		{
 			GameObject gameObject = collider.gameObject;
-			if(gameObject.tag == "Player")
+			Duck duck = gameObject.GetComponent<Duck>();
+
+			if(duck)
 			{
-				Duck duck = gameObject.GetComponent<Duck>();
-				if(duck)
-				{
-					duck.distance += 0.01f;
-				}
+				duck.distance += 0.1f;
 			}
+			
 		}
 
 	}
