@@ -20,6 +20,9 @@ public class WavePlane : MonoBehaviour
     public float HeightMutliplier = 0.01f;
     public float HeightPower = 2;
     public List<Wave> Waves = new List<Wave>();
+    public float randomDirecton = 0.1f;
+    public float randomPosition = 5.0f;
+    public float randomSpeed = 10.0f;
 
     private float DeWaveTimer = 0.0f;
 
@@ -40,11 +43,11 @@ public class WavePlane : MonoBehaviour
             position = position,
             direction = direction
         };
-        newWave.direction.x += Random.Range(-0.2f, 0.2f);
-        newWave.direction.z += Random.Range(-0.2f, 0.2f);
-        newWave.position.x += Random.Range(-5.0f, 5.0f);
-        newWave.position.z += Random.Range(-5.0f, 5.0f);
-        newWave.speed += Random.Range(-10.0f, 10.0f);
+        newWave.direction.x += Random.Range(-randomDirecton, randomDirecton);
+        newWave.direction.z += Random.Range(-randomDirecton, randomDirecton);
+        newWave.position.x += Random.Range(-randomPosition, randomPosition);
+        newWave.position.z += Random.Range(-randomPosition, randomPosition);
+        newWave.speed += Random.Range(-randomSpeed, randomSpeed);
         Waves.Add(newWave);
     }
 
