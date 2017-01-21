@@ -118,12 +118,12 @@ public class WavePlane : MonoBehaviour
                 waveHeight += Mathf.Clamp(4.0f - distance, 0.0f, 2.0f) * 0.5f;
             }
 
-            tempMap.Add(Mathf.Lerp(prevHeight, waveHeight, 0.25f));
-            tempMap.Add(Mathf.Lerp(prevHeight, waveHeight, 0.5f));
-            tempMap.Add(Mathf.Lerp(prevHeight, waveHeight, 0.75f));
+            tempMap.Add(Mathf.Lerp(prevHeight, waveHeight, 0.33f));
+            tempMap.Add(Mathf.Lerp(prevHeight, waveHeight, 0.66f));
+            //tempMap.Add(Mathf.Lerp(prevHeight, waveHeight, 0.75f));
             tempMap.Add(waveHeight);
             prevHeight = waveHeight;
-            i += 4;
+            i += 3;
         }
 
 
