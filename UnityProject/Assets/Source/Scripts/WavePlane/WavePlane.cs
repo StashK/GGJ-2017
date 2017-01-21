@@ -11,6 +11,12 @@ public class Wave
 
 public class WavePlane : MonoBehaviour
 {
+    public static WavePlane Get
+    {
+        get { return local; }
+    }
+    private static WavePlane local;
+
     public float HeightMutliplier = 0.01f;
     public float HeightPower = 2;
     public List<Wave> Waves = new List<Wave>();
@@ -18,6 +24,7 @@ public class WavePlane : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        local = this;
         CreateWave(Vector3.zero, Vector3.forward);
         CreateWave(Vector3.zero, Vector3.forward);
         CreateWave(Vector3.zero, Vector3.forward);
