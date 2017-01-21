@@ -98,8 +98,8 @@ public class Duck : MonoBehaviour, IComparable
 
     void Update()
     {
-        // transform.LookAt(GetComponent<AntiManController>().transform);
-
+		// transform.LookAt(GetComponent<AntiManController>().transform);
+		transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one * Mathf.Pow(fatness, -3), 0.1f);
         if (airController.GetButtonDown(InputAction.Gameplay.WeaponLeft))
         {
             Debug.Log("FSDFSDF");
@@ -127,4 +127,13 @@ public class Duck : MonoBehaviour, IComparable
         isDeath = true;
 
     }
+
+	public void OnCollisionEnter(Collision other)
+	{
+		if(other.collider.tag == "BreadPickup")
+		{
+			fatness++;
+			Destroy(other.gameObject);
+		}
+	}
 }
