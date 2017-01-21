@@ -15,6 +15,9 @@ public class Duck : MonoBehaviour, IComparable
 
     private bool isDeath = false;
 
+    private bool tapped = false;
+    private bool isDoubleTapped = false;
+    private int doubleTapCounter = 0;
     public bool IsDeath()
     {
         return isDeath;
@@ -46,19 +49,45 @@ public class Duck : MonoBehaviour, IComparable
     {
         if(isDeath)
             return;
+        if (tapped)
+            doubleTapCounter++;
 
+        if (doubleTapCounter >= 10)
+        {
+            doubleTapCounter = 0;
+            tapped = false;
+            Debug.Log("tapped is false");
+        }
         distance -= DuckGameGlobalConfig.distanceSpeed * Time.deltaTime;
         
         if (airController.GetButtonDown(InputAction.Gameplay.MoveLeft))
         {
             GoLeft();
+
+            if (tapped)
+            {
+                isDoubleTapped = true;
+                Debug.Log("Double tapped");
+            }
         }
         
         if (airController.GetButtonDown(InputAction.Gameplay.MoveRight))
         {
             GoRight();
+
+            if (tapped)
+            {
+                isDoubleTapped = true;
+                Debug.Log("Double tapped");
+            }
         }
-        
+
+        if (airController.GetButtonUp(InputAction.Gameplay.MoveLeft) || airController.GetButtonUp(InputAction.Gameplay.MoveRight))
+        {
+            tapped = true;
+            Debug.Log("tapped is true");
+        }
+
         Vector2 toBePlacedVector = new Vector2(1.0f, 0.0f);
         toBePlacedVector = toBePlacedVector.Rotate(angle) * distance * DuckGameGlobalConfig.startDistance;
         transform.position = new Vector3(toBePlacedVector.x, 0, toBePlacedVector.y);
@@ -93,13 +122,27 @@ public class Duck : MonoBehaviour, IComparable
             from += centerToSide;
             to -= centerToSide;
             float diffAngle = Vector3.Angle(from, to);
-            if (Vector3.Dot(right, (from - to)) < 0)
+            if (!isDoubleTapped)
             {
-                angle += diffAngle * 0.1f;
+                if (Vector3.Dot(right, (from - to)) < 0)
+                {
+                    angle += diffAngle * 0.1f;
+                }
+                else
+                {
+                    angle -= diffAngle * 0.1f;
+                }
             }
             else
             {
-                angle -= diffAngle * 0.1f;
+                if (Vector3.Dot(right, (from - to)) < 0)
+                {
+                    collision.transform.GetComponent<Duck>().angle -= diffAngle * 0.8f;
+                }
+                else
+                {
+                    collision.transform.GetComponent<Duck>().angle += diffAngle * 0.8f;
+                }
             }
         }
     }
