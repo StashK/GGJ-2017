@@ -5,6 +5,9 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour {
 
+	bool connectMenuOpen;
+	public GameObject connectMenu;
+
 	// Use this for initialization
 	void Start () {
 		
@@ -19,4 +22,12 @@ public class MainMenu : MonoBehaviour {
     {
         SceneManager.LoadScene("Gameplay");
     }
+
+	public void OpenConnectMenu()
+	{
+		if(!connectMenuOpen && connectMenu)
+		{
+			connectMenu.SetActive(true);
+		}
+	}
 }

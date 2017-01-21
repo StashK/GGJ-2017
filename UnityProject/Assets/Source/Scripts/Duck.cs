@@ -41,7 +41,7 @@ public class Duck : MonoBehaviour, IComparable
     void Start()
     {
         airController = AirConsoleManager.Instance.GetPlayer(playerId);
-        PastelGenerator.Lightness = 0.3f;
+        PastelGenerator.Lightness = 0.8f;
         transform.Find("Ducky_Body").GetComponent<Renderer>().material.color = PastelGenerator.Generate();
         rb = GetComponent<Rigidbody>();
         transform.LookAt(FindObjectOfType<AntiManController>().transform);
@@ -78,16 +78,6 @@ public class Duck : MonoBehaviour, IComparable
             }
         }
 
-        if (airController.GetButton(InputAction.Gameplay.WeaponLeft))
-        {
-            SubtitleRenderer.AddSubtitle(new DuckTitles
-            {
-                Text = "Quack !",
-                Colour = PastelGenerator.Generate(),
-                Size = 16
-            });
-        }
-
         if (airController.GetButton(InputAction.Gameplay.MoveRight))
         {
             GoRight();
@@ -110,6 +100,16 @@ public class Duck : MonoBehaviour, IComparable
     {
         // transform.LookAt(GetComponent<AntiManController>().transform);
 
+        if (airController.GetButtonDown(InputAction.Gameplay.WeaponLeft))
+        {
+            Debug.Log("FSDFSDF");
+            SubtitleRenderer.AddSubtitle(new DuckTitles
+            {
+                Text = "Quack !",
+                Colour = PastelGenerator.Generate(),
+                Size = 32
+            });
+        }
     }
 
     private void GoLeft()

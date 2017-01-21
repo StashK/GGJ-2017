@@ -114,7 +114,7 @@ public class AirConsoleManager : MonoBehaviour {
 
     void OnMessage(int from, JToken data)
     {
-        //Debug.Log(data.ToString());
+        Debug.Log(data.ToString());
 
         foreach (Player p in playerList)
         {
@@ -640,8 +640,7 @@ public class AirConsoleManager : MonoBehaviour {
 
             if (data.Value<string>("element") == "weapon-left")
             {
-                weaponLeft = data["data"].Value<bool>("weapon-left");
-
+                weaponLeft = data["data"].Value<bool>("pressed");
                 if (data["data"].Value<bool>("pressed"))
                 {
                     weaponLeftDown = true;
