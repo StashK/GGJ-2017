@@ -16,11 +16,11 @@ public class FacetedWater : MonoBehaviour
 
         while (i < mesh.vertices.Length)
         {
+            Random.InitState((int)((mesh.vertices[i].x + mesh.vertices[i].z) * 500));
             randomTimes[i] = Random.Range(range.x, range.y);
 
             i++;
         }
-
     }
 
     void Update()
@@ -31,9 +31,13 @@ public class FacetedWater : MonoBehaviour
         int i = 0;
         while (i < vertices.Length)
         {
+
             vertices[i].y = 1 * Mathf.PingPong(Time.time * speed, randomTimes[i]);
             i++;
         }
         mesh.vertices = vertices;
+
+        mesh.RecalculateBounds();
+        mesh.RecalculateNormals();
     }
 }
