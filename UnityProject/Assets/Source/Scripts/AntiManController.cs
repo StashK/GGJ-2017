@@ -90,7 +90,7 @@ public class AntiManController : MonoBehaviour
             ParticleSystem.MainModule mainModule = waveParticles.main;
             mainModule.startSpeed = 10f * inputLength;
 
-            //WavePlane.Get.CreateWave(transform.position, targetLineForward.normalized);
+            WavePlane.Get.CreateWave(transform.position, targetLineForward.normalized);
         }
         else if (isWaving)
         {
