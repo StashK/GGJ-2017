@@ -74,9 +74,7 @@ public class AntiManController : MonoBehaviour {
 			{
 				duck.distance += 0.1f * inputLength;
 			}
-			
 		}
-
 	}
 
 	// Update is called once per frame
@@ -89,6 +87,5 @@ public class AntiManController : MonoBehaviour {
 		{
 			PushBackDucks();
 		}
-
 	}
 }
