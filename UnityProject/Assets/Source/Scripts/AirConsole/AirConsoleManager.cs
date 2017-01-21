@@ -471,6 +471,10 @@ public class AirConsoleManager : MonoBehaviour {
             this.playerId = playerId;
             // init Input
             input = new Input();
+
+            Transform duck = Instantiate(JPL.Core.Prefabs.duck);
+            duck.name = "Duck_" + playerId;
+            duck.GetComponent<Duck>().playerId = playerId;
         }
 
         #region PLAYER_FUNCTIONS
