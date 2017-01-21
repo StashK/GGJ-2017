@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using CielaSpike;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -26,11 +27,14 @@ public class WavePlane : MonoBehaviour
 
     private float DeWaveTimer = 0.0f;
 
+    private Vector3[] vertices;
+
     // Use this for initialization
     void Start()
     {
         local = this;
 
+        this.StartCoroutineAsync(Calc());
     }
 
     public void CreateWave(Vector3 position, Vector3 direction)
@@ -57,42 +61,64 @@ public class WavePlane : MonoBehaviour
     {
         DeWaveTimer += Time.deltaTime;
 
-        foreach (Wave wave in Waves)
+        if (vertices != null && vertices.Length > 0)
+        GetComponent<MeshFilter>().mesh.vertices = vertices;
+    }
+
+    IEnumerator Calc ()
+    {
+        yield return Ninja.JumpToUnity;
+
+        foreach (Wave wave in this.Waves)
         {
             wave.position += wave.direction * Time.deltaTime * wave.speed;
             if (wave.position.magnitude > 25.0f)
             {
-                Waves.Remove(wave);
+                this.Waves.Remove(wave);
                 break;
             }
         }
+
+        Wave[] Waves = new Wave[this.Waves.Count];
+        this.Waves.CopyTo(Waves);
+
+        
         Mesh mesh = GetComponent<MeshFilter>().mesh;
         Vector3[] vertices = mesh.vertices;
+
+        float curY = transform.position.y;
+
+        //yield return Ninja.JumpBack;
         int i = 0;
 
         while (i < vertices.Length)
         {
+            Vector3 worldPt = vertices[i];
+            worldPt.y = 0.0f;
             float waveHeight = 0.0f;
+
             foreach (Wave wave in Waves)
             {
-                Vector3 worldPt = transform.TransformPoint(vertices[i]);
-                worldPt.y = 0.0f;
 
                 Vector3 playerPos = wave.position;
                 playerPos.y = 0.0f;
 
                 float distance = Vector3.Distance(playerPos, worldPt);
+                if (distance > 5.0f)
+                    break;
 
                 waveHeight += 1.0f / distance;
                 waveHeight = Mathf.Clamp(waveHeight, 0.0f, 1.0f) * 1.5f;
             }
 
-            vertices[i].y += transform.position.y + waveHeight;
+            vertices[i].y += waveHeight;
             i++;
         }
-        mesh.vertices = vertices;
-        mesh.RecalculateBounds();
+        yield return Ninja.JumpToUnity;
+        this.vertices = vertices;
+        //mesh.RecalculateBounds();
         //mesh.RecalculateNormals();
+        this.StartCoroutineAsync(Calc());
     }
 
     private void OnDrawGizmos()

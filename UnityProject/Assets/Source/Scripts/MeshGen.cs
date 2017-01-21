@@ -31,7 +31,6 @@ public class MeshGen : MonoBehaviour {
 
     IEnumerator Test ()
     {
-        yield return new WaitForEndOfFrame();
         //yield return Ninja.JumpToUnity;
         //vertices = GetComponent<MeshFilter>().mesh.vertices;
         //yield return Ninja.JumpBack;
@@ -62,6 +61,7 @@ public class MeshGen : MonoBehaviour {
 
         //GetComponent<MeshFilter>().mesh.Clear();
         GetComponent<MeshFilter>().sharedMesh.vertices = vertices;
+        yield return new WaitForEndOfFrame();
 
         this.StartCoroutineAsync(Test());
     }
