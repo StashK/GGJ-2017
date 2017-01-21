@@ -12,10 +12,18 @@ public class Duck : MonoBehaviour, IComparable
     public float angle = 0;
     [Range(0, 1)]
     public float distance = 1.0f;
+    public float fatness = 1.0f;
 
-    public bool isDeath = false;
+    private bool isDeath = false;
+    private Rigidbody rb;
+    private bool tapped = false;
+    private bool isDoubleTapped = false;
+    private int doubleTapCounter = 0;
+    public bool IsDeath()
+    {
+        return isDeath;
 
-    private float prevAngle;
+    }
 
     public int CompareTo(object obj)
     {
@@ -33,71 +41,90 @@ public class Duck : MonoBehaviour, IComparable
     void Start()
     {
         airController = AirConsoleManager.Instance.GetPlayer(playerId);
-        prevAngle = angle;
-        PastelGenerator.Lightness = 0.3f;
-        GetComponent<Renderer>().material.color = PastelGenerator.Generate();
+        PastelGenerator.Lightness = 0.8f;
+        transform.Find("Ducky_Body").GetComponent<Renderer>().material.color = PastelGenerator.Generate();
+        rb = GetComponent<Rigidbody>();
+        transform.LookAt(FindObjectOfType<AntiManController>().transform);
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (!isDeath)
+        if (isDeath)
+            return;
+
+        transform.LookAt(FindObjectOfType<AntiManController>().transform);
+        rb.velocity = transform.forward * DuckGameGlobalConfig.moveSpeed;
+
+        if (tapped)
+            doubleTapCounter++;
+
+        if (doubleTapCounter >= 10)
         {
-            distance -= DuckGameGlobalConfig.distanceSpeed * Time.deltaTime;
+            doubleTapCounter = 0;
+            tapped = false;
+            Debug.Log("tapped is false");
+        }
 
-            if (airController.GetButtonDown(InputAction.Gameplay.MoveLeft))
+
+        if (airController.GetButton(InputAction.Gameplay.MoveLeft))
+        {
+            GoLeft();
+
+            if (tapped)
             {
-                GoLeft();
+                isDoubleTapped = true;
+                Debug.Log("Double tapped");
             }
+        }
 
-            if (airController.GetButtonDown(InputAction.Gameplay.MoveRight))
+        if (airController.GetButton(InputAction.Gameplay.MoveRight))
+        {
+            GoRight();
+
+            if (tapped)
             {
-                GoRight();
+                isDoubleTapped = true;
+                Debug.Log("Double tapped");
             }
+        }
 
-            Vector2 toBePlacedVector = new Vector2(1.0f, 0.0f);
-            toBePlacedVector = toBePlacedVector.Rotate(angle) * distance * DuckGameGlobalConfig.startDistance;
-            transform.position = new Vector3(toBePlacedVector.x, 0, toBePlacedVector.y);
+        if (airController.GetButtonUp(InputAction.Gameplay.MoveLeft) || airController.GetButtonUp(InputAction.Gameplay.MoveRight))
+        {
+            tapped = true;
+            Debug.Log("tapped is true");
         }
     }
 
-    private void Update()
+    void Update()
     {
-        prevAngle = angle;
+        // transform.LookAt(GetComponent<AntiManController>().transform);
+
+        if (airController.GetButtonDown(InputAction.Gameplay.WeaponLeft))
+        {
+            Debug.Log("FSDFSDF");
+            SubtitleRenderer.AddSubtitle(new DuckTitles
+            {
+                Text = "Quack !",
+                Colour = PastelGenerator.Generate(),
+                Size = 32
+            });
+        }
     }
 
     private void GoLeft()
     {
-        angle -= DuckGameGlobalConfig.moveSpeed * Time.deltaTime;
+        rb.velocity += transform.right;
     }
 
     private void GoRight()
     {
-        angle += DuckGameGlobalConfig.moveSpeed * Time.deltaTime;
+        rb.velocity -= transform.right;
     }
 
-    void OnCollisionEnter(Collision collision)
+    public void Kill()
     {
-        Debug.Log("OnCollisionEnter");
-        if (collision.collider.tag == "Player")
-        {
-            Debug.Log(collision.contacts[0].point);
-            //HackyHacky sorta working
-            Vector3 right = Vector3.Cross(this.transform.position, Vector3.up);
-            Vector3 from = this.transform.position;
-            Vector3 to = collision.transform.position;
-            Vector3 centerToSide = (to - from).normalized * (transform.localScale.x);
-            from += centerToSide;
-            to -= centerToSide;
-            float diffAngle = Vector3.Angle(from, to);
-            if (Vector3.Dot(right, (from - to)) < 0)
-            {
-                angle += diffAngle * 0.1f;
-            }
-            else
-            {
-                angle -= diffAngle * 0.1f;
-            }
-        }
+        isDeath = true;
+
     }
 }

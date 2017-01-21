@@ -10,16 +10,28 @@ public class GameManager : MonoBehaviour {
     private bool isPreFallOffFinished = false;
     public float lastDropOffTime;
     public HexGrid hexGrid;
+    private float maxDistance;
 	// Use this for initialization
 	void Start () {
-       duckList = FindObjectsOfType<Duck>().ToList<Duck>();
+        float steps = 360.0f / AirConsoleManager.Instance.ActivePlayers().Count;
+        int steppers = 0;
+        foreach (AirConsoleManager.Player p in AirConsoleManager.Instance.ActivePlayers())
+        {
+            Vector2 spawnPosition = new Vector2(1, 0);
+            spawnPosition = spawnPosition.Rotate(steppers * steps);
+            Transform instantiatedDuckTransform = Instantiate(JPL.Core.Prefabs.duck, new Vector3(spawnPosition.x * DuckGameGlobalConfig.startDistance, 0, spawnPosition.y * DuckGameGlobalConfig.startDistance), Quaternion.identity);
+            Duck neededDuck = instantiatedDuckTransform.GetComponent<Duck>();
+            neededDuck.playerId = p.PlayerId;
+            neededDuck.playerName = p.playerName;
+            duckList.Add(neededDuck);
+            steppers++;
+        }
         startTime = Time.time;
+        maxDistance = DuckGameGlobalConfig.startDistance +1;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        duckList = FindObjectsOfType<Duck>().ToList<Duck>(); //Hackyhacky get ducks
-
         if (!isGameFinished)
         {
             if(!isPreFallOffFinished && Time.time >= startTime + DuckGameGlobalConfig.preDropOffTime) //Duck dieing starts
@@ -35,8 +47,8 @@ public class GameManager : MonoBehaviour {
                 {
                     lastDropOffTime = Time.time;
                     Duck furtherstDuck = GetFurtherstDuck();
-                    furtherstDuck.isDeath = true;
-                    Debug.Log(Vector3.Distance(furtherstDuck.transform.position, Vector3.zero));
+                    furtherstDuck.Kill();
+                    maxDistance = Vector3.Distance(furtherstDuck.transform.position, Vector3.zero);
                     hexGrid.SetFalloff(Vector3.Distance(furtherstDuck.transform.position, Vector3.zero));
                     Debug.Log("someone lost");
                 }
@@ -44,7 +56,11 @@ public class GameManager : MonoBehaviour {
 
             foreach (Duck d in duckList)
             {
-                if (Vector3.Distance(d.transform.position, new Vector3(0, 0, 0)) <= DuckGameGlobalConfig.winDistance)
+                float duckDistance = Vector3.Distance(d.transform.position, new Vector3(0, 0, 0));
+                if (duckDistance >= maxDistance) //if duck distance is higher than max distance, kill the duck
+                    d.Kill();
+
+                if (duckDistance <= DuckGameGlobalConfig.winDistance)
                 {
                     PlayerWon(d.playerName);
                     return;
@@ -58,6 +74,12 @@ public class GameManager : MonoBehaviour {
         Debug.Log(name + " won");
         duckList.Sort();
         isGameFinished = true;
+
+        foreach (Duck d in duckList)
+        {
+            Debug.Log("killing duck");
+            d.Kill();
+        }
     }
 
     Duck GetFurtherstDuck()
@@ -67,7 +89,7 @@ public class GameManager : MonoBehaviour {
         returnDuck = duckList[0];
         foreach (Duck d in duckList)
         {
-            if (!d.isDeath)
+            if (!d.IsDeath())
             {
                 if (Vector3.Distance(d.transform.position, new Vector3(0, 0, 0)) > furtherstDistance)
                 {
@@ -75,7 +97,6 @@ public class GameManager : MonoBehaviour {
                     furtherstDistance = Vector3.Distance(d.transform.position, new Vector3(0, 0, 0));
                 }
             }
-
         }
         return returnDuck;
     }
