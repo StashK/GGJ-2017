@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour {
         int steppers = 0;
         foreach (AirConsoleManager.Player p in AirConsoleManager.Instance.ActivePlayers())
         {
-            Vector2 spawnPosition = new Vector2(1, 0);
+            Vector2 spawnPosition = new Vector2(1, 2);
             spawnPosition = spawnPosition.Rotate(steppers * steps);
             Transform instantiatedDuckTransform = Instantiate(JPL.Core.Prefabs.duck, new Vector3(spawnPosition.x * DuckGameGlobalConfig.startDistance, 0, spawnPosition.y * DuckGameGlobalConfig.startDistance), Quaternion.identity);
             Duck neededDuck = instantiatedDuckTransform.GetComponent<Duck>();
