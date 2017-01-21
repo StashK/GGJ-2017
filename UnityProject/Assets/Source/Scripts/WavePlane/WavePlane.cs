@@ -21,24 +21,20 @@ public class WavePlane : MonoBehaviour
     public float HeightPower = 2;
     public List<Wave> Waves = new List<Wave>();
 
+    private float DeWaveTimer = 0.0f;
+
     // Use this for initialization
     void Start()
     {
         local = this;
-        CreateWave(Vector3.zero, Vector3.forward);
-        CreateWave(Vector3.zero, Vector3.forward);
-        CreateWave(Vector3.zero, Vector3.forward);
-        CreateWave(Vector3.zero, Vector3.forward);
-        CreateWave(Vector3.zero, Vector3.forward);
-        CreateWave(Vector3.zero, Vector3.forward);
-        CreateWave(Vector3.zero, Vector3.forward);
-        CreateWave(Vector3.zero, Vector3.forward);
-        CreateWave(Vector3.zero, Vector3.forward);
-        CreateWave(Vector3.zero, Vector3.forward);
     }
 
-    void CreateWave(Vector3 position, Vector3 direction)
+    public void CreateWave(Vector3 position, Vector3 direction)
     {
+        if (DeWaveTimer < 0.075f)
+            return;
+
+        DeWaveTimer = 0.0f;
         Wave newWave = new Wave
         {
             position = position,
@@ -55,11 +51,12 @@ public class WavePlane : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        DeWaveTimer += Time.deltaTime;
 
         foreach (Wave wave in Waves)
         {
             wave.position += wave.direction * Time.deltaTime * wave.speed;
-            if (wave.position.magnitude > 150.0f)
+            if (wave.position.magnitude > 75.0f)
             {
                 Waves.Remove(wave);
                 break;
@@ -81,6 +78,9 @@ public class WavePlane : MonoBehaviour
                 playerPos.y = 0.0f;
 
                 float distance = Vector3.Distance(playerPos, worldPt);
+                if (distance > 15.0f)
+                    continue;
+
                 float localWaveHeight = (Mathf.Pow(distance, HeightPower)) * HeightMutliplier;
                 localWaveHeight = Mathf.Clamp(localWaveHeight, 0.0f, 1.0f);
                 localWaveHeight = 1.0f - localWaveHeight;
