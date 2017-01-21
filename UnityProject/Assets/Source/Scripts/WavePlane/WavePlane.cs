@@ -84,7 +84,6 @@ public class WavePlane : MonoBehaviour
 
                 waveHeight += 1.0f / distance;
                 waveHeight = Mathf.Clamp(waveHeight, 0.0f, 1.0f) * 1.5f;
-
             }
 
             vertices[i].y += transform.position.y + waveHeight;

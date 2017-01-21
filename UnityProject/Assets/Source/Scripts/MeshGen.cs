@@ -22,14 +22,11 @@ public class MeshGen : MonoBehaviour {
         CreateMesh(sizeX, sizeY, size);
 
         this.StartCoroutineAsync(Test());
-
     }
 	
-	// Update is called once per frame
-	void Update () {
-        
-
-
+    public void SetCurDistance (float newDistance)
+    {
+        curDistance = newDistance;
     }
 
     IEnumerator Test ()
@@ -123,6 +120,7 @@ public class MeshGen : MonoBehaviour {
         public float center1Magnitude;
         public Vector3 center2;
         public float center2Magnitude;
+        public float random;
 
         private Vector3[] originalVertices = new Vector3[6];
         public Vector3[] vertices = new Vector3[6];
@@ -144,6 +142,8 @@ public class MeshGen : MonoBehaviour {
             center1Magnitude = center1.magnitude;
             center2Magnitude = center2.magnitude;
 
+            random = Random.Range(0.8f, 0.95f);
+
             for (int i = 0; i < 6; i++)
             {
                 uv[i] = new Vector2(vertices[i].x, vertices[i].z);
@@ -157,6 +157,7 @@ public class MeshGen : MonoBehaviour {
 
         private void Calculate (Vector3 start, Vector3 end)
         {
+
             if (active1)
             {
                 vertices[2] = new Vector3(start.x, 0f, start.z);
@@ -165,9 +166,9 @@ public class MeshGen : MonoBehaviour {
             }
             else
             {
-                vertices[2] = (center1 + ((vertices[2] - center1)) * 0.9f);
-                vertices[1] = (center1 + ((vertices[1] - center1)) * 0.9f);
-                vertices[0] = (center1 + ((vertices[0] - center1)) * 0.9f);
+                vertices[2] = (center1 + ((vertices[2] - center1)) * random);
+                vertices[1] = (center1 + ((vertices[1] - center1)) * random);
+                vertices[0] = (center1 + ((vertices[0] - center1)) * random);
             }
 
             if (active2)
@@ -178,9 +179,9 @@ public class MeshGen : MonoBehaviour {
             }
             else
             {
-                vertices[5] = (center2 + ((vertices[5] - center2)) * 0.9f);
-                vertices[4] = (center2 + ((vertices[4] - center2)) * 0.9f);
-                vertices[3] = (center2 + ((vertices[3] - center2)) * 0.9f);
+                vertices[5] = (center2 + ((vertices[5] - center2)) * random);
+                vertices[4] = (center2 + ((vertices[4] - center2)) * random);
+                vertices[3] = (center2 + ((vertices[3] - center2)) * random);
             }
         }
     }

@@ -12,7 +12,7 @@ public class Duck : MonoBehaviour, IComparable
     public float angle = 0;
     [Range(0, 1)]
     public float distance = 1.0f;
-	public float fatness = 1.0f;
+    public float fatness = 1.0f;
 
     private bool isDeath = false;
     private Rigidbody rb;
@@ -41,7 +41,7 @@ public class Duck : MonoBehaviour, IComparable
     void Start()
     {
         airController = AirConsoleManager.Instance.GetPlayer(playerId);
-        PastelGenerator.Lightness = 0.3f;
+        PastelGenerator.Lightness = 0.8f;
         transform.Find("Ducky_Body").GetComponent<Renderer>().material.color = PastelGenerator.Generate();
         rb = GetComponent<Rigidbody>();
         transform.LookAt(FindObjectOfType<AntiManController>().transform);
@@ -50,7 +50,7 @@ public class Duck : MonoBehaviour, IComparable
     // Update is called once per frame
     void FixedUpdate()
     {
-        if(isDeath)
+        if (isDeath)
             return;
 
         transform.LookAt(FindObjectOfType<AntiManController>().transform);
@@ -65,8 +65,8 @@ public class Duck : MonoBehaviour, IComparable
             tapped = false;
             Debug.Log("tapped is false");
         }
-        
-        
+
+
         if (airController.GetButton(InputAction.Gameplay.MoveLeft))
         {
             GoLeft();
@@ -77,7 +77,7 @@ public class Duck : MonoBehaviour, IComparable
                 Debug.Log("Double tapped");
             }
         }
-        
+
         if (airController.GetButton(InputAction.Gameplay.MoveRight))
         {
             GoRight();
@@ -98,8 +98,18 @@ public class Duck : MonoBehaviour, IComparable
 
     void Update()
     {
-       // transform.LookAt(GetComponent<AntiManController>().transform);
+        // transform.LookAt(GetComponent<AntiManController>().transform);
 
+        if (airController.GetButtonDown(InputAction.Gameplay.WeaponLeft))
+        {
+            Debug.Log("FSDFSDF");
+            SubtitleRenderer.AddSubtitle(new DuckTitles
+            {
+                Text = "Quack !",
+                Colour = PastelGenerator.Generate(),
+                Size = 32
+            });
+        }
     }
 
     private void GoLeft()
