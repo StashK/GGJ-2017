@@ -112,6 +112,18 @@ public class Duck : MonoBehaviour, IComparable
         }
     }
 
+    public float GetTerrainHeight(float xPos, float zPos)
+    {
+        int x = (int)(xPos) + 25;
+        int z = (int)(zPos) + 25;
+
+        int i = x + z * 25;
+
+        float height = WavePlane.HeightMap[i];
+
+        return height;
+    }
+
     private void GoLeft()
     {
         rb.velocity += transform.right;

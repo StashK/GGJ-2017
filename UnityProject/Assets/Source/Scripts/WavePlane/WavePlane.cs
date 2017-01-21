@@ -41,7 +41,7 @@ public class WavePlane : MonoBehaviour
 
     public void CreateWave(Vector3 position, Vector3 direction)
     {
-        if (DeWaveTimer < 0.05f)
+        if (DeWaveTimer < 0.15f)
             return;
 
         DeWaveTimer = 0.0f;
@@ -68,7 +68,7 @@ public class WavePlane : MonoBehaviour
         Calc2();
     }
 
-    void Calc2 ()
+    void Calc2()
     {
         foreach (Wave wave in this.Waves)
         {
@@ -96,6 +96,8 @@ public class WavePlane : MonoBehaviour
 
         List<float> tempMap = new List<float>();
 
+        float prevHeight = 0.0f;
+
         while (i < vertices.Length)
         {
             Vector3 worldPt = vertices[i];
@@ -109,15 +111,19 @@ public class WavePlane : MonoBehaviour
                 playerPos.y = 0.0f;
 
                 float distance = Vector3.Distance(playerPos, worldPt);
-                //if (distance > 5.0f)
-                //    break;
+                if (distance > 4.0f)
+                    continue;
 
                 //waveHeight += 5.0f - distance;
-                waveHeight += Mathf.Clamp(5.0f - distance, 0.0f, 2.0f);
+                waveHeight += Mathf.Clamp(4.0f - distance, 0.0f, 2.0f) * 0.5f;
             }
 
+            tempMap.Add(Mathf.Lerp(prevHeight, waveHeight, 0.25f));
+            tempMap.Add(Mathf.Lerp(prevHeight, waveHeight, 0.5f));
+            tempMap.Add(Mathf.Lerp(prevHeight, waveHeight, 0.75f));
             tempMap.Add(waveHeight);
-            i++;
+            prevHeight = waveHeight;
+            i += 4;
         }
 
 
