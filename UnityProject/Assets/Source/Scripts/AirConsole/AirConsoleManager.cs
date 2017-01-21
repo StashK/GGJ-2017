@@ -516,11 +516,11 @@ public class AirConsoleManager : MonoBehaviour {
                 case InputAction.Gameplay.MoveLeft:
                     return input.moveLeftDown;
                 case InputAction.Gameplay.MoveRight:
-                    return input.moveRight;
+                    return input.moveRightDown;
                 case InputAction.Gameplay.WeaponLeft:
-                    return input.weaponLeft;
+                    return input.weaponLeftDown;
                 case InputAction.Gameplay.WeaponRight:
-                    return input.weaponRight;
+                    return input.weaponRightDown;
             }
 
             return false;
@@ -533,11 +533,11 @@ public class AirConsoleManager : MonoBehaviour {
                 case InputAction.Gameplay.MoveLeft:
                     return input.moveLeftUp;
                 case InputAction.Gameplay.MoveRight:
-                    return input.moveRight;
+                    return input.moveRightUp;
                 case InputAction.Gameplay.WeaponLeft:
-                    return input.weaponLeft;
+                    return input.weaponLeftUp;
                 case InputAction.Gameplay.WeaponRight:
-                    return input.weaponRight;
+                    return input.weaponRightUp; ;
             }
             return false;
         }
