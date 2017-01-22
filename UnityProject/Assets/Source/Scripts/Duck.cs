@@ -49,7 +49,7 @@ public class Duck : MonoBehaviour, IComparable
         duckColour = PastelGenerator.Generate();
         airController = AirConsoleManager.Instance.GetPlayer(playerId);
         PastelGenerator.Lightness = 0.8f;
-        transform.Find("Ducky_Body").GetComponent<Renderer>().material.SetColor("_EmissionColor", duckColour);
+        transform.Find("Ducky_Body").GetComponent<Renderer>().material.color = duckColour;
         rb = GetComponent<Rigidbody>();
         transform.LookAt(FindObjectOfType<AntiManController>().transform);
     }
