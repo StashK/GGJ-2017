@@ -84,7 +84,8 @@ public class GameManager : MonoBehaviour
                     Duck furtherstDuck = GetFurtherstDuck();
                     furtherstDuck.Kill();
                     maxDistance = Vector3.Distance(furtherstDuck.transform.position, Vector3.zero);
-                    hexGrid.SetFalloff(Vector3.Distance(furtherstDuck.transform.position, Vector3.zero));
+                    //hexGrid.SetFalloff(Vector3.Distance(furtherstDuck.transform.position, Vector3.zero));
+                    MeshGen.curDistance = Vector3.Distance(furtherstDuck.transform.position, Vector3.zero);
                     Debug.Log("someone lost");
                 }
             }
