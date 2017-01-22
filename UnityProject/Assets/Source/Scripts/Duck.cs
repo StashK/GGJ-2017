@@ -134,12 +134,12 @@ public class Duck : MonoBehaviour, IComparable
 
     private void GoLeft()
     {
-		displacementVector += transform.right * DuckGameGlobalConfig.sideMoveSpeed;
+		displacementVector -= transform.right * DuckGameGlobalConfig.sideMoveSpeed;
     }
 
     private void GoRight()
     {
-		displacementVector -= transform.right * DuckGameGlobalConfig.sideMoveSpeed;
+		displacementVector += transform.right * DuckGameGlobalConfig.sideMoveSpeed;
     }
 
     public void Kill()

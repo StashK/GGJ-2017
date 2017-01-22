@@ -68,7 +68,7 @@ public class AntiManController : MonoBehaviour
 		else
 		{
 			// Start boost
-			if (inputBoostDown)
+			if (inputBoostDown && isWaving)
 			{
 				isBoosting = true;
 			}
