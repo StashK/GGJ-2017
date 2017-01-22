@@ -15,12 +15,12 @@ public class MeshGen : MonoBehaviour
     public int sizeY = 5;
     public float size = 1f;
 
-    public float distance = 25f;
-    public static float curDistance = 25f;
+    public static float curDistance;
 
     // Use this for initialization
     void Start()
     {
+		curDistance = DuckGameGlobalConfig.startDistance + 2;
         CreateMesh(sizeX, sizeY, size);
 
         this.StartCoroutineAsync(Test());

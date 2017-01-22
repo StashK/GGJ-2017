@@ -68,9 +68,7 @@ public class Duck : MonoBehaviour, IComparable
 
 		transform.LookAt(FindObjectOfType<AntiManController>().transform);
 
-        float vectorLength = Mathf.Clamp(displacementVector.magnitude, 0, DuckGameGlobalConfig.moveSpeed * 15.0f);
-        displacementVector.Normalize();
-        displacementVector *= vectorLength;
+		//displacementVector = Vector3.ClampMagnitude(displacementVector, DuckGameGlobalConfig.moveSpeed * 15f);
 		rb.velocity = transform.forward * DuckGameGlobalConfig.moveSpeed + displacementVector;
 		
 		/*
@@ -126,7 +124,7 @@ public class Duck : MonoBehaviour, IComparable
         if (GameManager.GameIntroTime > 0.0f)
             return;
 		// transform.LookAt(GetComponent<AntiManController>().transform);
-		transform.localScale = Vector3.Lerp(transform.localScale, new Vector3(fatness, fatness, fatness), 0.2f);
+		transform.localScale = Vector3.Lerp(transform.localScale, new Vector3(fatness, fatness, fatness) * 2f, 0.2f) ;
 
 		displacementVector = Vector3.Lerp(displacementVector, Vector3.zero, displacementRechargeLerp);
 

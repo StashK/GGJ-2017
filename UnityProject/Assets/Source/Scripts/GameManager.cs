@@ -86,11 +86,13 @@ public class GameManager : MonoBehaviour
                 if (Time.time >= lastDropOffTime + DuckGameGlobalConfig.dropOffTime) //Furthers duck dies 
                 {
                     lastDropOffTime = Time.time;
+					/*
                     Duck furtherstDuck = GetFurtherstDuck();
                     furtherstDuck.Kill();
                     maxDistance = Vector3.Distance(furtherstDuck.transform.position, Vector3.zero);
-                    //hexGrid.SetFalloff(Vector3.Distance(furtherstDuck.transform.position, Vector3.zero));
-                    MeshGen.curDistance = Vector3.Distance(furtherstDuck.transform.position, Vector3.zero);
+					//hexGrid.SetFalloff(Vector3.Distance(furtherstDuck.transform.position, Vector3.zero));
+					*/
+					MeshGen.curDistance -= 5f;
                     Debug.Log("someone lost");
                 }
 				if(!killOffSoundPlayed && Time.time >= lastDropOffTime + DuckGameGlobalConfig.dropOffTime - killoffAudioSource.clip.length )
@@ -112,9 +114,9 @@ public class GameManager : MonoBehaviour
 				sideMoveSpeedCache = DuckGameGlobalConfig.sideMoveSpeed;
 				duckPushDistanceCache = DuckGameGlobalConfig.duckPushDistance;
 				quackSpamIntervalCache = DuckGameGlobalConfig.quackSpamInterval;
-				DuckGameGlobalConfig.moveSpeed = 10f;
-				DuckGameGlobalConfig.sideMoveSpeed = 15f;
-				DuckGameGlobalConfig.duckPushDistance = 20f;
+				DuckGameGlobalConfig.moveSpeed = 15f;
+				DuckGameGlobalConfig.sideMoveSpeed = 30f;
+				DuckGameGlobalConfig.duckPushDistance = 30f;
 				DuckGameGlobalConfig.quackSpamInterval = 0f;
 				quakCounterText.gameObject.SetActive(false);
 			}

@@ -73,14 +73,11 @@ public class AntiManController : MonoBehaviour
                 isBoosting = true;
             }
             // Recharge boost
-            if (boostTimer < boostTime && !Input.GetButton("Fire1"))
+            if (boostTimer < boostTime && (!Input.GetButton("Fire1") || !isWaving))
                 boostTimer += boostRechargeRate * 0.1f;
         }
         if (boostSprite)
             boostSprite.fillAmount = (boostTimer / boostTime);
-
-		if (GameManager.Get.vaporTrapMode)
-			inputLength *= 2f;
 		
         //Debug.Log("InputLenght: " + inputLength);
 
