@@ -8,27 +8,27 @@ public class AntiManController : MonoBehaviour
 
     public Vector2 inputVector;
     public float inputLength;
-	public bool inputBoostDown;
-	public bool inputBoostUp;
+    public bool inputBoostDown;
+    public bool inputBoostUp;
 
     public Vector3 targetLineForward;
     public float targetLineDistance;
 
     [Range(0, 1)]
     public float targetLineLerp = 0.5f;
-    [Range(100f, 10000f)]
-    public float duckPushForce = 0.01f;
 
-	public bool isBoosting = false;
-	public float boostTime = 2f;
-	private float boostTimer = 2f;
-	public float boostRechargeRate = 1f;
-	public Image boostSprite;
+    public static bool isBoosting = false;
+    public float boostTime = 2f;
+    private float boostTimer = 2f;
+    public float boostRechargeRate = 1f;
+    public Image boostSprite;
 
-	public ParticleSystem waveParticles;
+    public ParticleSystem waveParticles;
 
-    public bool drawDebugLines;
     public bool isWaving;
+
+    public AudioClip boatIdle;
+    public AudioClip boatBoost;
 
     // Use this for initialization
     void Start()
@@ -36,6 +36,8 @@ public class AntiManController : MonoBehaviour
         waveParticles = GetComponentInChildren<ParticleSystem>();
         if (!waveParticles)
             Debug.LogWarning("Particles on player not found");
+        JPL.Core.Sounds.PlaySound(boatIdle, JPL.SOUNDSETTING.SFX);
+
     }
 
     void CheckInput()
@@ -43,52 +45,57 @@ public class AntiManController : MonoBehaviour
         inputVector.x = Input.GetAxisRaw("Horizontal");
         inputVector.y = Input.GetAxisRaw("Vertical");
 
-		inputBoostDown = Input.GetButtonDown("Fire1");
-		inputBoostUp = Input.GetButtonUp("Fire1");
-	}
+        inputBoostDown = Input.GetButtonDown("Fire1");
+        inputBoostUp = Input.GetButtonUp("Fire1");
+    }
 
     void UpdateWaving()
     {
         targetLineForward = Vector3.Slerp(targetLineForward, new Vector3(inputVector.x, 0, inputVector.y), targetLineLerp);
         inputLength = Mathf.Min(1, targetLineForward.magnitude);
 
-		if (isBoosting)
-		{
-			if (inputBoostUp)
-				isBoosting = false;
+        if (isBoosting)
+        {
+            if (inputBoostUp)
+                isBoosting = false;
 
-			// Set boost
-			boostTimer -= Time.deltaTime;
-			if (boostTimer > 0f)
-				inputLength *= 2f;
-			else
-				isBoosting = false;
-		}
-		else
-		{
-			// Start boost
-			if (inputBoostDown)
-				isBoosting = true;
-			// Recharge boost
-			if (boostTimer < boostTime && !Input.GetButton("Fire1"))
-				boostTimer += boostRechargeRate * 0.1f;
-		}
-		if (boostSprite)
-			boostSprite.fillAmount = (boostTimer / boostTime);
+            // Set boost
+            boostTimer -= Time.deltaTime;
+            if (boostTimer > 0f)
+                inputLength *= 2f;
+            else
+                isBoosting = false;
+        }
+        else
+        {
+            // Start boost
+            if (inputBoostDown && isWaving)
+            {
+                isBoosting = true;
+            }
+            // Recharge boost
+            if (boostTimer < boostTime && !Input.GetButton("Fire1"))
+                boostTimer += boostRechargeRate * 0.1f;
+        }
+        if (boostSprite)
+            boostSprite.fillAmount = (boostTimer / boostTime);
 
-		//Debug.Log("InputLenght: " + inputLength);
+		if (GameManager.Get.vaporTrapMode)
+			inputLength *= 2f;
+		
+        //Debug.Log("InputLenght: " + inputLength);
 
-		// Toggle isWaving and particles
-		if (inputLength > 0.05f)
+        // Toggle isWaving and particles
+        if (inputLength > 0.05f)
         {
             transform.rotation = Quaternion.LookRotation(targetLineForward, transform.up);
             isWaving = true;
             if (!waveParticles.isEmitting)
                 waveParticles.Play();
             ParticleSystem.EmissionModule emissionModule = waveParticles.emission;
-            emissionModule.rateOverTimeMultiplier = inputLength * 50f;
+            emissionModule.rateOverTimeMultiplier = inputLength * 70f;
             ParticleSystem.MainModule mainModule = waveParticles.main;
-            mainModule.startSpeed = 20f * inputLength;
+            mainModule.startSpeed = 30f * inputLength;
 
             WavePlane.Get.CreateWave(transform.position, targetLineForward.normalized);
         }
@@ -104,7 +111,7 @@ public class AntiManController : MonoBehaviour
     {
         Collider[] gameObjectsInRange = Physics.OverlapCapsule(transform.position, transform.position + targetLineForward.normalized * targetLineDistance * inputLength, 1.5f);
 
-        if (drawDebugLines)
+        if (DuckGameGlobalConfig.drawDebugLines)
             Debug.DrawRay(transform.position, targetLineForward.normalized * targetLineDistance * inputLength, Color.red);
 
         foreach (Collider collider in gameObjectsInRange)
@@ -112,17 +119,33 @@ public class AntiManController : MonoBehaviour
             Rigidbody RB = collider.GetComponent<Rigidbody>();
             Duck duck = collider.GetComponent<Duck>();
 
-			if (duck && !duck.IsDeath())
+            if (duck && !duck.IsDeath())
             {
-				if(RB)
-					RB.AddForce(targetLineForward * duckPushForce * inputLength, ForceMode.Force);
+                duck.displacementVector = targetLineForward.normalized * DuckGameGlobalConfig.duckPushDistance * inputLength;
+                switch (duck.fatness)
+                {
+                    case 1:
+                        duck.displacementVector *= DuckGameGlobalConfig.fatness1PushMultiplier;
+                        break;
+                    case 2:
+                        duck.displacementVector *= DuckGameGlobalConfig.fatness1PushMultiplier;
+                        break;
+                    case 3:
+                        duck.displacementVector *= DuckGameGlobalConfig.fatness1PushMultiplier;
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }
 
-	// Update is called once per frame
-	void Update()
+    // Update is called once per frame
+    void Update()
     {
+        if (GameManager.GameIntroTime > 0.0f)
+            return;
+
         CheckInput();
 
         UpdateWaving();

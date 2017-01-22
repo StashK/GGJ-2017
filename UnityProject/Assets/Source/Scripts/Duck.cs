@@ -6,145 +6,189 @@ using UnityEngine;
 public class Duck : MonoBehaviour, IComparable
 {
 
-    private AirConsoleManager.Player airController;
-    public int playerId;
-    public string playerName;
-    public float angle = 0;
-    [Range(0, 1)]
-    public float distance = 1.0f;
-    public float fatness = 1.0f;
+	private AirConsoleManager.Player airController;
+	public int playerId;
+	public string playerName;
+	public float angle = 0;
+	[Range(0, 1)]
+	public float distance = 1.0f;
+	public int fatness = 1;
+    private float fatnessTimer = 0f;
 
-    private bool isDeath = false;
-    private Rigidbody rb;
-    private bool tapped = false;
-    private bool isDoubleTapped = false;
-    private int doubleTapCounter = 0;
-    public bool IsDeath()
-    {
-        return isDeath;
+	public Vector3 displacementVector;
+	public float displacementRechargeLerp;
 
-    }
+	private bool isDeath = false;
+	private Rigidbody rb;
+	private bool tapped = false;
+	private bool isDoubleTapped = false;
+	private int doubleTapCounter = 0;
 
-    public int CompareTo(object obj)
-    {
-        if (obj == null) return 1;
+	private Color duckColour;
 
-        Duck otherDuck = obj as Duck;
-        if (otherDuck != null)
-        {
-            return this.distance.CompareTo(otherDuck.distance);
-        }
+	public bool IsDeath()
+	{
+		return isDeath;
 
-        return 0;
-    }
-    // Use this for initialization
-    void Start()
-    {
-        airController = AirConsoleManager.Instance.GetPlayer(playerId);
-        PastelGenerator.Lightness = 0.8f;
-        transform.Find("Ducky_Body").GetComponent<Renderer>().material.color = PastelGenerator.Generate();
-        rb = GetComponent<Rigidbody>();
-        transform.LookAt(FindObjectOfType<AntiManController>().transform);
+	}
+
+	public int CompareTo(object obj)
+	{
+		if (obj == null) return 1;
+
+		Duck otherDuck = obj as Duck;
+		if (otherDuck != null)
+		{
+			return this.distance.CompareTo(otherDuck.distance);
+		}
+
+		return 0;
+	}
+	// Use this for initialization
+	void Start()
+	{
+		duckColour = PastelGenerator.Generate();
+		airController = AirConsoleManager.Instance.GetPlayer(playerId);
+		PastelGenerator.Lightness = 0.8f;
+        transform.Find("Ducky_Body").GetComponent<Renderer>().material.color = duckColour;
+		rb = GetComponent<Rigidbody>();
+		transform.LookAt(FindObjectOfType<AntiManController>().transform);
+
+        fatnessTimer = DuckGameGlobalConfig.removeDuckFatnessInterval;
     }
 
     // Update is called once per frame
     void FixedUpdate()
-    {
-        if (isDeath)
+	{
+        if (isDeath || GameManager.GameIntroTime > 0.0f)
+			return;
+
+		transform.LookAt(FindObjectOfType<AntiManController>().transform);
+
+
+		rb.velocity = transform.forward * DuckGameGlobalConfig.moveSpeed + displacementVector;
+		
+		/*
+		if (GameManager.Get.vaporTrapMode && transform.position.magnitude < DuckGameGlobalConfig.startDistance - 1f)
+		{
+			transform.position = transform.position.normalized * (DuckGameGlobalConfig.startDistance - 1f);
+			rb.velocity = Vector3.zero;
+		}
+		*/
+
+		if (tapped)
+			doubleTapCounter++;
+
+		if (doubleTapCounter >= 10)
+		{
+			doubleTapCounter = 0;
+			tapped = false;
+			Debug.Log("tapped is false");
+		}
+
+
+		if (airController.GetButton(InputAction.Gameplay.MoveLeft))
+		{
+			GoLeft();
+
+			if (tapped)
+			{
+				isDoubleTapped = true;
+				Debug.Log("Double tapped");
+			}
+		}
+
+		if (airController.GetButton(InputAction.Gameplay.MoveRight))
+		{
+			GoRight();
+
+			if (tapped)
+			{
+				isDoubleTapped = true;
+				Debug.Log("Double tapped");
+			}
+		}
+
+		if (airController.GetButtonUp(InputAction.Gameplay.MoveLeft) || airController.GetButtonUp(InputAction.Gameplay.MoveRight))
+		{
+			tapped = true;
+			Debug.Log("tapped is true");
+		}
+	}
+
+	void Update()
+	{
+        if (GameManager.GameIntroTime > 0.0f)
             return;
+		// transform.LookAt(GetComponent<AntiManController>().transform);
+		transform.localScale = Vector3.Lerp(transform.localScale, new Vector3(fatness, fatness, fatness), 0.2f);
 
-        transform.LookAt(FindObjectOfType<AntiManController>().transform);
-        rb.velocity = transform.forward * DuckGameGlobalConfig.moveSpeed;
+		displacementVector = Vector3.Lerp(displacementVector, Vector3.zero, displacementRechargeLerp);
 
-        if (tapped)
-            doubleTapCounter++;
-
-        if (doubleTapCounter >= 10)
+        if (fatnessTimer < 0f)
         {
-            doubleTapCounter = 0;
-            tapped = false;
-            Debug.Log("tapped is false");
+            fatnessTimer = DuckGameGlobalConfig.removeDuckFatnessInterval;
+            if (fatness > 1)
+                fatness--;
         }
+        fatnessTimer -= Time.deltaTime;
 
+		if (DuckGameGlobalConfig.drawDebugLines)
+			Debug.DrawRay(transform.position, displacementVector, Color.green);
 
-        if (airController.GetButton(InputAction.Gameplay.MoveLeft))
-        {
-            GoLeft();
+		if (airController.GetButtonDown(InputAction.Gameplay.WeaponLeft))
+		{
+			SubtitleRenderer.AddSubtitle(new DuckTitles
+			{
+				Text = "Quack !",
+				Colour = new Color(duckColour.r + 0.3f, duckColour.g + 0.3f, duckColour.b + 0.3f),
+				Size = 32
+			});
 
-            if (tapped)
-            {
-                isDoubleTapped = true;
-                Debug.Log("Double tapped");
-            }
-        }
+			GameManager.Get.quakCounter++;
+		}
+	}
 
-        if (airController.GetButton(InputAction.Gameplay.MoveRight))
-        {
-            GoRight();
+	public float GetTerrainHeight(float xPos, float zPos)
+	{
+		int x = (int)(xPos) + 25;
+		int z = (int)(zPos) + 25;
 
-            if (tapped)
-            {
-                isDoubleTapped = true;
-                Debug.Log("Double tapped");
-            }
-        }
+		int i = x + z * 25;
 
-        if (airController.GetButtonUp(InputAction.Gameplay.MoveLeft) || airController.GetButtonUp(InputAction.Gameplay.MoveRight))
-        {
-            tapped = true;
-            Debug.Log("tapped is true");
-        }
-    }
+		float height = WavePlane.HeightMap[i];
 
-    void Update()
-    {
-        // transform.LookAt(GetComponent<AntiManController>().transform);
-        transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one * Mathf.Pow(fatness, -3), 0.1f);
-        if (airController.GetButtonDown(InputAction.Gameplay.WeaponLeft))
-        {
-            SubtitleRenderer.AddSubtitle(new DuckTitles
-            {
-                Text = "Quack !",
-                Colour = transform.Find("Ducky_Body").GetComponent<Renderer>().material.color,
-                Size = 32
-            });
-        }
-    }
+		return height;
+	}
 
-    public float GetTerrainHeight(float xPos, float zPos)
-    {
-        int x = (int)(xPos) + 25;
-        int z = (int)(zPos) + 25;
+	private void GoLeft()
+	{
+		transform.LookAt(Vector3.zero);
 
-        int i = x + z * 25;
+		displacementVector -= transform.right * DuckGameGlobalConfig.sideMoveSpeed;
+	}
 
-        float height = WavePlane.HeightMap[i];
+	private void GoRight()
+	{
+		transform.LookAt(Vector3.zero);
+		displacementVector += transform.right * DuckGameGlobalConfig.sideMoveSpeed;
+	}
 
-        return height;
-    }
+	public void Kill()
+	{
+		isDeath = true;
 
-    private void GoLeft()
-    {
-        rb.velocity += transform.right;
-    }
-
-    private void GoRight()
-    {
-        rb.velocity -= transform.right;
-    }
-
-    public void Kill()
-    {
-        isDeath = true;
-
-    }
+	}
 
 	public void OnCollisionEnter(Collision other)
 	{
-		if(other.collider.tag == "BreadPickup")
+		if (other.collider.tag == "BreadPickup")
 		{
-			fatness++;
-			Destroy(other.gameObject);
+            if (fatness < 3)
+            {
+                fatness++;
+                Destroy(other.gameObject);
+            }
 		}
 	}
 }

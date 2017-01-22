@@ -1,6 +1,7 @@
 ﻿using CielaSpike;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Wave
@@ -18,7 +19,8 @@ public class WavePlane : MonoBehaviour
     }
     private static WavePlane local;
 
-    public float HeightMutliplier = 0.01f;
+    public float HeightMutliplier = 1.0f;
+    public float RadiusMutliplier = 5.0f;
     public float HeightPower = 2;
     public List<Wave> Waves = new List<Wave>();
     public float randomDirecton = 0.1f;
@@ -28,7 +30,7 @@ public class WavePlane : MonoBehaviour
     private float DeWaveTimer = 0.0f;
 
     public Vector3[] vertices;
-
+    Vector3[] avgPoints;
     public static float[] HeightMap;
 
     // Use this for initialization
@@ -37,6 +39,11 @@ public class WavePlane : MonoBehaviour
         local = this;
 
         //this.StartCoroutineAsync(Calc());
+
+        Mesh mesh = GetComponent<MeshFilter>().mesh;
+        Vector3[] vertices = mesh.vertices;
+
+        HeightMap = new float[vertices.Length];
     }
 
     public void CreateWave(Vector3 position, Vector3 direction)
@@ -63,9 +70,33 @@ public class WavePlane : MonoBehaviour
     {
         DeWaveTimer += Time.deltaTime;
 
+        RadiusMutliplier = 3.0f;
+        HeightMutliplier = 1.0f;
+
+        if (AntiManController.isBoosting)
+        {
+            RadiusMutliplier = 5.0f;
+            HeightMutliplier = 1.3f;
+        }
+
         //if (vertices != null && vertices.Length > 0)
         //    GetComponent<MeshFilter>().mesh.vertices = vertices;
         Calc2();
+    }
+
+    public Vector3 CenterOfVectors(Vector3[] vectors)
+    {
+        Vector3 sum = Vector3.zero;
+        if (vectors == null || vectors.Length == 0)
+        {
+            return sum;
+        }
+
+        foreach (Vector3 vec in vectors)
+        {
+            sum += vec;
+        }
+        return sum / vectors.Length;
     }
 
     void Calc2()
@@ -85,7 +116,6 @@ public class WavePlane : MonoBehaviour
 
         //Debug.Log(Waves.Length);
 
-
         Mesh mesh = GetComponent<MeshFilter>().mesh;
         Vector3[] vertices = (Vector3[])mesh.vertices.Clone();
 
@@ -94,43 +124,36 @@ public class WavePlane : MonoBehaviour
         //yield return Ninja.JumpBack;
         int i = 0;
 
-        List<float> tempMap = new List<float>();
-
-        float prevHeight = 0.0f;
-
-        while (i < vertices.Length)
+        while (i < vertices.Length / 3)
         {
-            Vector3 worldPt = vertices[i];
+            Vector3 worldPt = CenterOfVectors(new Vector3[] { vertices[i * 3 + 0], vertices[i * 3 + 1], vertices[i * 3 + 2] });
             worldPt.y = 0.0f;
             float waveHeight = 0.0f;
 
             foreach (Wave wave in Waves)
             {
-
                 Vector3 playerPos = wave.position;
                 playerPos.y = 0.0f;
 
                 float distance = Vector3.Distance(playerPos, worldPt);
-                if (distance > 4.0f)
+                if (distance > RadiusMutliplier)
                     continue;
 
-                waveHeight += Mathf.Clamp(4.0f - distance, 0.0f, 2.0f) * 0.5f;
+                float dot = (Vector3.Dot(playerPos.normalized, worldPt.normalized) + 1.0f) * 0.5f;
+
+                waveHeight += Mathf.Clamp(RadiusMutliplier - distance, 0.0f, 2.0f) * HeightMutliplier * dot;
             }
-            tempMap.Add(Mathf.Lerp(prevHeight, waveHeight, 0.25f));
-            tempMap.Add(Mathf.Lerp(prevHeight, waveHeight, 0.5f));
-            tempMap.Add(Mathf.Lerp(prevHeight, waveHeight, 0.75f));
-            tempMap.Add(waveHeight);
-            prevHeight = waveHeight;
-            i += 4;
+
+            HeightMap[i * 3 + 0] = waveHeight;
+            HeightMap[i * 3 + 1] = waveHeight;
+            HeightMap[i * 3 + 2] = waveHeight;
+
+            i++;
         }
-
-
         //yield return Ninja.JumpToUnity;
-
-        HeightMap = tempMap.ToArray();
     }
 
-    IEnumerator Calc()
+    /*IEnumerator Calc()
     {
         yield return Ninja.JumpToUnity;
 
@@ -149,7 +172,7 @@ public class WavePlane : MonoBehaviour
 
 
         Mesh mesh = GetComponent<MeshFilter>().mesh;
-        Vector3[] vertices = (Vector3[])mesh.vertices.Clone();
+        Vector3[] vertices = mesh.vertices;
 
         float curY = transform.position.y;
 
@@ -170,12 +193,12 @@ public class WavePlane : MonoBehaviour
                 Vector3 playerPos = wave.position;
                 playerPos.y = 0.0f;
 
-                float distance = Vector3.Distance(playerPos, worldPt);
-                if (distance > 5.0f)
+                float distance = Vector3.SqrMagnitude(playerPos - worldPt);
+                if (distance > 25.0f)
                     break;
 
                 waveHeight += 1.0f / distance;
-                waveHeight = Mathf.Clamp(waveHeight, 0.0f, 1.0f) * 1.5f;
+                waveHeight = Mathf.Clamp(waveHeight, 0.0f, 1.0f) * 5.0f;
             }
 
             tempMap.Add(waveHeight);
@@ -188,7 +211,7 @@ public class WavePlane : MonoBehaviour
         HeightMap = tempMap.ToArray();
 
         //this.StartCoroutineAsync(Calc());
-    }
+    }*/
 
     private void OnDrawGizmos()
     {
