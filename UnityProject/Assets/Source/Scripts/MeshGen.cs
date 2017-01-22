@@ -21,6 +21,7 @@ public class MeshGen : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+		curDistance = 100f;
         CreateMesh(sizeX, sizeY, size);
 
         this.StartCoroutineAsync(Test());
@@ -87,7 +88,7 @@ public class MeshGen : MonoBehaviour
         if (height == null) height = new float[101,101];
 
         yield return Ninja.JumpBack;
-        curDistance = distance;
+        //curDistance = distance;
 
         int vIndex = 0;
         Quad q;

@@ -189,8 +189,10 @@ public class Duck : MonoBehaviour, IComparable
 	public void Kill()
 	{
 		if (!isDeath)
-			audioSource.PlayOneShot(audioSource.clip);
+			JPL.Core.Sounds.PlaySound(audioSource.clip, JPL.SOUNDSETTING.SFX);
 		isDeath = true;
+
+		Destroy(this.gameObject);
 	}
 
 	public void OnCollisionEnter(Collision other)

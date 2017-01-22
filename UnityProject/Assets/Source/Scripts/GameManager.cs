@@ -63,6 +63,7 @@ public class GameManager : MonoBehaviour
 
 
         maxQuaks = activePlayers * 20;
+
     }
 
     // Update is called once per frame
@@ -142,6 +143,8 @@ public class GameManager : MonoBehaviour
 				quakCounterText.text = (maxQuaks - quakCounter).ToString();
 				foreach (Duck d in duckList)
 				{
+					if (!d)
+						continue;
 					float duckDistance = Vector3.Distance(d.transform.position, new Vector3(0, duckStartY, 0));
 					if (duckDistance >= maxDistance) //if duck distance is higher than max distance, kill the duck
 						d.Kill();
