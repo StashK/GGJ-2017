@@ -12,7 +12,7 @@ public class DuckGameGlobalConfig {
 	public static float duckPushDistance = 20f;
 
 	public static float preDropOffTime = 10f;
-    public static float dropOffTime = 10.0f;
+    public static float dropOffTime = 5f;
 
 	public static float quackSpamInterval = 0.5f;
 
