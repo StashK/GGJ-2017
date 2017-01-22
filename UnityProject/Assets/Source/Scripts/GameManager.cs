@@ -29,8 +29,9 @@ public class GameManager : MonoBehaviour
     float moveSpeedCache;
     float sideMoveSpeedCache;
     float duckPushDistanceCache;
+	float quackSpamIntervalCache;
 
-    private static GameManager instance;
+	private static GameManager instance;
     public static GameManager Get { get { return instance; } }
 
     public static float GameIntroTime;
