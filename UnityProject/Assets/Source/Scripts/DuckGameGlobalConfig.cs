@@ -6,10 +6,11 @@ public class DuckGameGlobalConfig {
     public static float distanceSpeed = 0.01f;
     public static float moveSpeed = 0.8f;
 	public static float sideMoveSpeed = 10f;
-    public static float startDistance = 20f;
+    public static float startDistance = 50f;
     public static float winDistance = 2.0f;
+	public static float targetLineDistance = 30f;
 
-	public static float duckPushDistance = 5f;
+	public static float duckPushDistance = 100f;
 
 	public static float preDropOffTime = 10f;
     public static float dropOffTime = 10.0f;

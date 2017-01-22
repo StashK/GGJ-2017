@@ -12,7 +12,6 @@ public class AntiManController : MonoBehaviour
     public bool inputBoostUp;
 
     public Vector3 targetLineForward;
-    public float targetLineDistance;
 
     [Range(0, 1)]
     public float targetLineLerp = 0.5f;
@@ -109,10 +108,10 @@ public class AntiManController : MonoBehaviour
 
     void PushBackDucks()
     {
-        Collider[] gameObjectsInRange = Physics.OverlapCapsule(transform.position, transform.position + targetLineForward.normalized * targetLineDistance * inputLength, 1.5f);
+        Collider[] gameObjectsInRange = Physics.OverlapCapsule(transform.position, transform.position + targetLineForward.normalized * DuckGameGlobalConfig.targetLineDistance * inputLength, 2f);
 
         if (DuckGameGlobalConfig.drawDebugLines)
-            Debug.DrawRay(transform.position, targetLineForward.normalized * targetLineDistance * inputLength, Color.red);
+            Debug.DrawRay(transform.position, targetLineForward.normalized * DuckGameGlobalConfig.targetLineDistance * inputLength, Color.red);
 
         foreach (Collider collider in gameObjectsInRange)
         {

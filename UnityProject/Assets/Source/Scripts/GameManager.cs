@@ -63,6 +63,7 @@ public class GameManager : MonoBehaviour
 
 
         maxQuaks = activePlayers * 20;
+
     }
 
     // Update is called once per frame
@@ -142,6 +143,8 @@ public class GameManager : MonoBehaviour
 				quakCounterText.text = (maxQuaks - quakCounter).ToString();
 				foreach (Duck d in duckList)
 				{
+					if (!d)
+						continue;
 					float duckDistance = Vector3.Distance(d.transform.position, new Vector3(0, duckStartY, 0));
 					if (duckDistance >= maxDistance) //if duck distance is higher than max distance, kill the duck
 						d.Kill();
@@ -167,6 +170,16 @@ public class GameManager : MonoBehaviour
             Debug.Log("killing duck");
             d.Kill();
         }
+
+        LeanTween.moveX(Camera.main.gameObject, -40, 2).setEase(LeanTweenType.easeInOutSine).setDelay(3f);
+        LeanTween.moveY(Camera.main.gameObject, 10, 2).setEase(LeanTweenType.easeInOutSine).setDelay(3f);
+        LeanTween.moveZ(Camera.main.gameObject, 15, 2).setEase(LeanTweenType.easeInOutSine).setDelay(3f);
+
+        LeanTween.rotateX(Camera.main.gameObject, -5, 2).setEase(LeanTweenType.easeInOutSine).setDelay(3f);
+        LeanTween.rotateY(Camera.main.gameObject, -200, 2).setEase(LeanTweenType.easeInOutSine).setDelay(3f);
+        LeanTween.rotateZ(Camera.main.gameObject, -10, 2).setEase(LeanTweenType.easeInOutSine).setDelay(3f);
+
+        FindObjectOfType<Light>().intensity = 0.5f;
     }
 
     Duck GetFurtherstDuck()

@@ -116,7 +116,7 @@ public class MeshGen : MonoBehaviour
 
         yield return Ninja.JumpBack;
         //Vector3[] vertices = new Vector3[this.vertices.Length];
-        curDistance = distance;
+        //curDistance = distance;
 
         int vIndex = 0;
         Quad q;
