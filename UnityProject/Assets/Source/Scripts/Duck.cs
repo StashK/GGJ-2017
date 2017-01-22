@@ -30,8 +30,7 @@ public class Duck : MonoBehaviour, IComparable
 
 	public bool IsDeath()
 	{
-		return isDeath;
-
+        return isDeath;
 	}
 
 	public int CompareTo(object obj)
@@ -67,7 +66,9 @@ public class Duck : MonoBehaviour, IComparable
 
 		transform.LookAt(FindObjectOfType<AntiManController>().transform);
 
-
+        float vectorLength = Mathf.Clamp(displacementVector.magnitude, 0, DuckGameGlobalConfig.moveSpeed * 15.0f);
+        displacementVector.Normalize();
+        displacementVector *= vectorLength;
 		rb.velocity = transform.forward * DuckGameGlobalConfig.moveSpeed + displacementVector;
 		
 		/*
@@ -153,13 +154,19 @@ public class Duck : MonoBehaviour, IComparable
 		}
 	}
 
+    void LateUpdate()
+    {
+        Debug.Log(GetTerrainHeight(transform.position.x, transform.position.z));
+        transform.position = new Vector3(transform.position.x, GetTerrainHeight(transform.position.x, transform.position.z) + 0.8f, transform.position.z);
+
+    }
+
 	public float GetTerrainHeight(float xPos, float zPos)
 	{
 		int x = (int)(xPos) + 25;
 		int z = (int)(zPos) + 25;
 
 		int i = x + z * 25;
-
 		float height = WavePlane.HeightMap[i];
 
 		return height;
@@ -168,20 +175,18 @@ public class Duck : MonoBehaviour, IComparable
 	private void GoLeft()
 	{
 		transform.LookAt(Vector3.zero);
-
 		displacementVector -= transform.right * DuckGameGlobalConfig.sideMoveSpeed;
 	}
 
 	private void GoRight()
 	{
 		transform.LookAt(Vector3.zero);
-		displacementVector += transform.right * DuckGameGlobalConfig.sideMoveSpeed;
-	}
+        displacementVector += transform.right * DuckGameGlobalConfig.sideMoveSpeed;
+    }
 
 	public void Kill()
 	{
 		isDeath = true;
-
 	}
 
 	public void OnCollisionEnter(Collision other)
