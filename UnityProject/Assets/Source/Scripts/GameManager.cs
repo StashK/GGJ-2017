@@ -7,38 +7,40 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-	public List<Duck> duckList;
-	public bool isGameFinished = false;
-	public float startTime;
-	private bool isPreFallOffFinished = false;
-	public float lastDropOffTime;
-	public HexGrid hexGrid;
-	private float maxDistance;
+    public List<Duck> duckList;
+    public bool isGameFinished = false;
+    public float startTime;
+    private bool isPreFallOffFinished = false;
+    public float lastDropOffTime;
+    public HexGrid hexGrid;
+    private float maxDistance;
     public float duckStartY;
 
-	public int maxQuaks;
-	public int quakCounter;
-	public bool vaporTrapMode;
-	private float vaporTrapTimer;
-	public Text quakCounterText;
+    public int maxQuaks;
+    public int quakCounter;
+    public bool vaporTrapMode;
+    private float vaporTrapTimer;
+    public Text quakCounterText;
 
-	public AudioSource audioSource;
-	public AudioClip vaporTrapClip;
-	public AudioClip vaporDefaultClip;
+    public AudioSource audioSource;
+    public AudioClip vaporTrapClip;
+    public AudioClip vaporDefaultClip;
 
-	float moveSpeedCache;
-	float sideMoveSpeedCache;
-	float duckPushDistanceCache;
+    float moveSpeedCache;
+    float sideMoveSpeedCache;
+    float duckPushDistanceCache;
 
-	private static GameManager instance;
-	public static GameManager Get { get{ return instance;}}
+    private static GameManager instance;
+    public static GameManager Get { get { return instance; } }
+
+    public static float GameIntroTime;
 
     // Use this for initialization
     void Start()
     {
-		instance = this;
-		int activePlayers = AirConsoleManager.Instance.ActivePlayers().Count;
-		float steps = 360.0f / activePlayers;
+        instance = this;
+        int activePlayers = AirConsoleManager.Instance.ActivePlayers().Count;
+        float steps = 360.0f / activePlayers;
         int steppers = 0;
         foreach (AirConsoleManager.Player p in AirConsoleManager.Instance.ActivePlayers())
         {
@@ -56,7 +58,7 @@ public class GameManager : MonoBehaviour
         GameIntroTime = 3.0f;
 
 
-		maxQuaks = activePlayers * 20;
+        maxQuaks = activePlayers * 20;
     }
 
     // Update is called once per frame
@@ -86,59 +88,59 @@ public class GameManager : MonoBehaviour
                 }
             }
 
-			if(quakCounter > maxQuaks && !vaporTrapMode)
-			{
-				quakCounter = 0;
-				vaporTrapMode = true;
-				vaporTrapTimer = vaporTrapClip.length;
-				audioSource.clip = vaporTrapClip;
-				audioSource.volume = 1.5f;
-				audioSource.Play();
-				moveSpeedCache = DuckGameGlobalConfig.moveSpeed;
-				sideMoveSpeedCache = DuckGameGlobalConfig.sideMoveSpeed;
-				duckPushDistanceCache = DuckGameGlobalConfig.duckPushDistance;
-				DuckGameGlobalConfig.moveSpeed = 10f;
-				DuckGameGlobalConfig.sideMoveSpeed = 15f;
-				DuckGameGlobalConfig.duckPushDistance = 20f;
-				quakCounterText.gameObject.SetActive(false);
-			}
+            if (quakCounter > maxQuaks && !vaporTrapMode)
+            {
+                quakCounter = 0;
+                vaporTrapMode = true;
+                vaporTrapTimer = vaporTrapClip.length;
+                audioSource.clip = vaporTrapClip;
+                audioSource.volume = 1.5f;
+                audioSource.Play();
+                moveSpeedCache = DuckGameGlobalConfig.moveSpeed;
+                sideMoveSpeedCache = DuckGameGlobalConfig.sideMoveSpeed;
+                duckPushDistanceCache = DuckGameGlobalConfig.duckPushDistance;
+                DuckGameGlobalConfig.moveSpeed = 10f;
+                DuckGameGlobalConfig.sideMoveSpeed = 15f;
+                DuckGameGlobalConfig.duckPushDistance = 20f;
+                quakCounterText.gameObject.SetActive(false);
+            }
 
-			if (vaporTrapMode)
-			{
-				vaporTrapTimer -= Time.deltaTime;
+            if (vaporTrapMode)
+            {
+                vaporTrapTimer -= Time.deltaTime;
 
-				if (vaporTrapTimer <= 0f)
-				{
-					vaporTrapMode = false;
-					quakCounter = 0;
-					audioSource.clip = vaporDefaultClip;
-					audioSource.volume = 0.5f;
-					audioSource.Play();
-					DuckGameGlobalConfig.moveSpeed = moveSpeedCache;
-					DuckGameGlobalConfig.sideMoveSpeed = sideMoveSpeedCache;
-					DuckGameGlobalConfig.duckPushDistance = duckPushDistanceCache;
-					vaporTrapTimer = vaporTrapClip.length;
-					quakCounterText.gameObject.SetActive(true);
-				}
-			}
-			else
-			{
-				quakCounterText.text = (maxQuaks - quakCounter).ToString();
-				foreach (Duck d in duckList)
-				{
-					float duckDistance = Vector3.Distance(d.transform.position, new Vector3(0, duckStartY, 0));
-					if (duckDistance >= maxDistance) //if duck distance is higher than max distance, kill the duck
-						d.Kill();
+                if (vaporTrapTimer <= 0f)
+                {
+                    vaporTrapMode = false;
+                    quakCounter = 0;
+                    audioSource.clip = vaporDefaultClip;
+                    audioSource.volume = 0.5f;
+                    audioSource.Play();
+                    DuckGameGlobalConfig.moveSpeed = moveSpeedCache;
+                    DuckGameGlobalConfig.sideMoveSpeed = sideMoveSpeedCache;
+                    DuckGameGlobalConfig.duckPushDistance = duckPushDistanceCache;
+                    vaporTrapTimer = vaporTrapClip.length;
+                    quakCounterText.gameObject.SetActive(true);
+                }
+            }
+            else
+            {
+                quakCounterText.text = (maxQuaks - quakCounter).ToString();
+                foreach (Duck d in duckList)
+                {
+                    float duckDistance = Vector3.Distance(d.transform.position, new Vector3(0, duckStartY, 0));
+                    if (duckDistance >= maxDistance) //if duck distance is higher than max distance, kill the duck
+                        d.Kill();
 
-					if (duckDistance <= DuckGameGlobalConfig.winDistance)
-					{
-						PlayerWon(d.playerName);
-						return;
-					}
-				}
-			}
+                    if (duckDistance <= DuckGameGlobalConfig.winDistance)
+                    {
+                        PlayerWon(d.playerName);
+                        return;
+                    }
+                }
+            }
         }
-	}
+    }
 
     void PlayerWon(string name)
     {
@@ -172,8 +174,8 @@ public class GameManager : MonoBehaviour
         return returnDuck;
     }
 
-	public void RestartLevel()
-	{
-		SceneManager.LoadScene("Gameplay");
-	}
+    public void RestartLevel()
+    {
+        SceneManager.LoadScene("Gameplay");
+    }
 }
