@@ -14,7 +14,7 @@ public class BottleScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        gameObject.SetActive(GameManager.Get.vaporTrapMode);
+        GetComponent<MeshRenderer>().enabled = GameManager.Get.vaporTrapMode;
         transform.position = transform.position + transform.forward * 0.33f;
 
         if (transform.position.z > 90)
