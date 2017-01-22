@@ -32,6 +32,7 @@ public class WavePlane : MonoBehaviour
     public Vector3[] vertices;
     Vector3[] avgPoints;
     public static float[] HeightMap;
+    public static float[,] heightMap2;
 
     // Use this for initialization
     void Start()
@@ -44,6 +45,9 @@ public class WavePlane : MonoBehaviour
         Vector3[] vertices = mesh.vertices;
 
         HeightMap = new float[vertices.Length];
+
+        Debug.Log(GridPos(Vector3.zero));
+        Debug.Log(GridToWorld(new Vector2(50, 50)));
     }
 
     public void CreateWave(Vector3 position, Vector3 direction)
@@ -81,7 +85,8 @@ public class WavePlane : MonoBehaviour
 
         //if (vertices != null && vertices.Length > 0)
         //    GetComponent<MeshFilter>().mesh.vertices = vertices;
-        Calc2();
+        //Calc2();
+        CalcOptimized();
     }
 
     public Vector3 CenterOfVectors(Vector3[] vectors)
@@ -101,10 +106,12 @@ public class WavePlane : MonoBehaviour
 
     void Calc2()
     {
+        
+
         foreach (Wave wave in this.Waves)
         {
             wave.position += wave.direction * Time.deltaTime * wave.speed;
-            if (wave.position.magnitude > 50.0f)
+            if (wave.position.magnitude > 100.0f)
             {
                 this.Waves.Remove(wave);
                 break;
@@ -151,6 +158,67 @@ public class WavePlane : MonoBehaviour
             i++;
         }
         //yield return Ninja.JumpToUnity;
+    }
+
+    void CalcOptimized ()
+    {
+        heightMap2 = new float[101, 101];
+
+        foreach (Wave wave in this.Waves)
+        {
+            wave.position += wave.direction * Time.deltaTime * wave.speed;
+            if (wave.position.magnitude > 100.0f)
+            {
+                this.Waves.Remove(wave);
+                break;
+            }
+        }
+
+        Wave[] Waves = new Wave[this.Waves.Count];
+        this.Waves.CopyTo(Waves);
+
+        foreach (Wave wave in Waves)
+        {
+            Vector2 gridPos = GridPos(wave.position);
+            int xPos = (int)gridPos.x;
+            int yPos = (int)gridPos.y;
+
+            for (int i = -2; i < 2; i++)
+            {
+                for (int j= -2; j < 2; j++)
+                {
+                    if (xPos + i < 0 || xPos + i > 99) return;
+                    if (yPos + j < 0 || yPos + j > 99) return;
+
+                    float distance = Vector3.Distance(wave.position, GridToWorld(new Vector2(xPos + i, yPos + j)));
+
+                    //Debug.Log((xPos + i) + " " + (yPos + j) + " " + GridToWorld(new Vector2(xPos + i, yPos + j)));
+                    heightMap2[xPos + i, yPos + j] = 2.5f - distance;
+                }
+            }
+        }
+    }
+
+    public static Vector2 GridPos (Vector3 worldpos)
+    {
+        Vector2 gridPos = new Vector2();
+
+        gridPos.x = 50 + (int)(worldpos.x / 2);
+        gridPos.y = 50 + (int)(worldpos.z / 2);
+
+        //if (gridPos.x < 0 || gridPos.x > 99 || gridPos.y < 0 || gridPos.y > 99) Debug.Log(gridPos);
+
+        return gridPos;
+    }
+
+    public static Vector3 GridToWorld (Vector2 gridPos)
+    {
+        Vector3 worldPos = Vector3.zero;
+
+        worldPos.x = -100 + ((int)gridPos.x * 2);
+        worldPos.z = -100 + ((int)gridPos.y * 2);
+
+        return worldPos;
     }
 
     /*IEnumerator Calc()
