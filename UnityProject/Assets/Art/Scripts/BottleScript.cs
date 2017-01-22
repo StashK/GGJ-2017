@@ -5,6 +5,8 @@ using UnityEngine;
 public class BottleScript : MonoBehaviour
 {
     private Vector3 startPos;
+    public MeshRenderer render;
+
     // Use this for initialization
     void Start()
     {
@@ -14,7 +16,7 @@ public class BottleScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        GetComponent<MeshRenderer>().enabled = GameManager.Get.vaporTrapMode;
+        render.enabled = GameManager.Get.vaporTrapMode;
         transform.position = transform.position + transform.forward * 0.33f;
 
         if (transform.position.z > 90)
