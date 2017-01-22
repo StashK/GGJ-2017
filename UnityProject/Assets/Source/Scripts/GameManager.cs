@@ -5,7 +5,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class GameManager : MonoBehaviour {
+public class GameManager : MonoBehaviour
+{
 	public List<Duck> duckList;
 	public bool isGameFinished = false;
 	public float startTime;
@@ -13,7 +14,7 @@ public class GameManager : MonoBehaviour {
 	public float lastDropOffTime;
 	public HexGrid hexGrid;
 	private float maxDistance;
-	public float duckStartY;
+    public float duckStartY;
 
 	public int maxQuaks;
 	public int quakCounter;
@@ -32,8 +33,9 @@ public class GameManager : MonoBehaviour {
 	private static GameManager instance;
 	public static GameManager Get { get{ return instance;}}
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start()
+    {
 		instance = this;
 		int activePlayers = AirConsoleManager.Instance.ActivePlayers().Count;
 		float steps = 360.0f / activePlayers;
@@ -51,15 +53,20 @@ public class GameManager : MonoBehaviour {
         }
         startTime = Time.time;
         maxDistance = DuckGameGlobalConfig.startDistance + 3;
+        GameIntroTime = 3.0f;
+
 
 		maxQuaks = activePlayers * 20;
-	}
-	
-	// Update is called once per frame
-	void Update () {
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        GameIntroTime -= Time.deltaTime;
+
         if (!isGameFinished)
         {
-            if(!isPreFallOffFinished && Time.time >= startTime + DuckGameGlobalConfig.preDropOffTime) //Duck dieing starts
+            if (!isPreFallOffFinished && Time.time >= startTime + DuckGameGlobalConfig.preDropOffTime) //Duck dieing starts
             {
                 isPreFallOffFinished = true;
                 lastDropOffTime = Time.time;
@@ -77,7 +84,7 @@ public class GameManager : MonoBehaviour {
                     hexGrid.SetFalloff(Vector3.Distance(furtherstDuck.transform.position, Vector3.zero));
                     Debug.Log("someone lost");
                 }
-			} 
+            }
 
 			if(quakCounter > maxQuaks && !vaporTrapMode)
 			{

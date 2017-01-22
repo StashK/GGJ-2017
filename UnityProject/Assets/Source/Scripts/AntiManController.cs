@@ -109,7 +109,6 @@ public class AntiManController : MonoBehaviour
 
     void PushBackDucks()
     {
-
         Collider[] gameObjectsInRange = Physics.OverlapCapsule(transform.position, transform.position + targetLineForward.normalized * targetLineDistance * inputLength, 1.5f);
 
         if (DuckGameGlobalConfig.drawDebugLines)
@@ -120,33 +119,33 @@ public class AntiManController : MonoBehaviour
             Rigidbody RB = collider.GetComponent<Rigidbody>();
             Duck duck = collider.GetComponent<Duck>();
 
-
             if (duck && !duck.IsDeath())
             {
-				Debug.Log((transform.position - duck.transform.position).magnitude);
-
-				duck.displacementVector = targetLineForward.normalized * DuckGameGlobalConfig.duckPushDistance * inputLength;
-				switch (duck.fatness)
-				{
-					case 1:
-						duck.displacementVector *= DuckGameGlobalConfig.fatness1PushMultiplier;
-						break;
-					case 2:
-						duck.displacementVector *= DuckGameGlobalConfig.fatness1PushMultiplier;
-						break;
-					case 3:
-						duck.displacementVector *= DuckGameGlobalConfig.fatness1PushMultiplier;
-						break;
-					default:
-						break;
-				}
-			}
+                duck.displacementVector = targetLineForward.normalized * DuckGameGlobalConfig.duckPushDistance * inputLength;
+                switch (duck.fatness)
+                {
+                    case 1:
+                        duck.displacementVector *= DuckGameGlobalConfig.fatness1PushMultiplier;
+                        break;
+                    case 2:
+                        duck.displacementVector *= DuckGameGlobalConfig.fatness1PushMultiplier;
+                        break;
+                    case 3:
+                        duck.displacementVector *= DuckGameGlobalConfig.fatness1PushMultiplier;
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (GameManager.GameIntroTime > 0.0f)
+            return;
+
         CheckInput();
 
         UpdateWaving();
