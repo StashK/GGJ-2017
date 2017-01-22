@@ -21,8 +21,16 @@ namespace AlpacaSound
 		SerializedProperty color5;
 		SerializedProperty color6;
 		SerializedProperty color7;
+        SerializedProperty color8;
+        SerializedProperty color9;
+        SerializedProperty color10;
+        SerializedProperty color11;
+        SerializedProperty color12;
+        SerializedProperty color13;
+        SerializedProperty color14;
+        SerializedProperty color15;
 
-		void OnEnable ()
+        void OnEnable ()
 		{
 			serObj = new SerializedObject (target);
 			
@@ -37,7 +45,15 @@ namespace AlpacaSound
 			color5 = serObj.FindProperty ("color5");
 			color6 = serObj.FindProperty ("color6");
 			color7 = serObj.FindProperty ("color7");
-		}
+            color8 = serObj.FindProperty("color8");
+            color9 = serObj.FindProperty("color9");
+            color10 = serObj.FindProperty("color10");
+            color11 = serObj.FindProperty("color11");
+            color12 = serObj.FindProperty("color12");
+            color13 = serObj.FindProperty("color13");
+            color14 = serObj.FindProperty("color14");
+            color15 = serObj.FindProperty("color15");
+        }
 
 		override public void OnInspectorGUI ()
 		{
@@ -57,6 +73,17 @@ namespace AlpacaSound
 			if (numColors.intValue > 5) color5.colorValue = EditorGUILayout.ColorField("Color 5", color5.colorValue);
 			if (numColors.intValue > 6) color6.colorValue = EditorGUILayout.ColorField("Color 6", color6.colorValue);
 			if (numColors.intValue > 7) color7.colorValue = EditorGUILayout.ColorField("Color 7", color7.colorValue);
+            if (numColors.intValue > 8)
+            {
+                color8.colorValue = EditorGUILayout.ColorField("Color 8", color8.colorValue);
+                color9.colorValue = EditorGUILayout.ColorField("Color 9", color9.colorValue);
+                color10.colorValue = EditorGUILayout.ColorField("Color 10", color10.colorValue);
+                color11.colorValue = EditorGUILayout.ColorField("Color 11", color11.colorValue);
+                color12.colorValue = EditorGUILayout.ColorField("Color 12", color12.colorValue);
+                color13.colorValue = EditorGUILayout.ColorField("Color 13", color13.colorValue);
+                color14.colorValue = EditorGUILayout.ColorField("Color 14", color14.colorValue);
+                color15.colorValue = EditorGUILayout.ColorField("Color 15", color15.colorValue);
+            }
 
 			serObj.ApplyModifiedProperties ();
 		}

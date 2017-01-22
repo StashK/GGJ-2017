@@ -8,7 +8,7 @@ namespace AlpacaSound
 	[AddComponentMenu("Image Effects/Custom/Retro Pixel")]
 	public class RetroPixel : MonoBehaviour
 	{
-		public static readonly int MAX_NUM_COLORS = 8;
+		public static readonly int MAX_NUM_COLORS = 16;
 
 		public int horizontalResolution = 160;
 		public int verticalResolution = 200;
@@ -24,8 +24,16 @@ namespace AlpacaSound
 		public Color color5 = new Color32(132, 207, 69, 255);
 		public Color color6 = new Color32(0, 165, 202, 255);
 		public Color color7 = new Color32(192, 106, 194, 255);
+        public Color color8 = new Color32(192, 106, 194, 255);
+        public Color color9 = new Color32(192, 106, 194, 255);
+        public Color color10 = new Color32(192, 106, 194, 255);
+        public Color color11 = new Color32(192, 106, 194, 255);
+        public Color color12 = new Color32(192, 106, 194, 255);
+        public Color color13 = new Color32(192, 106, 194, 255);
+        public Color color14 = new Color32(192, 106, 194, 255);
+        public Color color15 = new Color32(192, 106, 194, 255);
 
-		Shader[] shaders = new Shader[MAX_NUM_COLORS];
+        Shader[] shaders = new Shader[MAX_NUM_COLORS];
 
 		Material m_material;
 		Material material
@@ -36,7 +44,7 @@ namespace AlpacaSound
 				{
 					for (int i = 1; i < MAX_NUM_COLORS; ++i)
 					{
-						string shaderName = "AlpacaSound/RetroPixel" + (i+1);
+						string shaderName = i+1 <= 8 ? "AlpacaSound/RetroPixel" + (i+1) : "AlpacaSound/RetroPixel9";
 						Shader shader = Shader.Find (shaderName);
 
 						if (shader == null)
@@ -69,7 +77,7 @@ namespace AlpacaSound
 		{
 			horizontalResolution = Mathf.Clamp(horizontalResolution, 1, 2048);
 			verticalResolution = Mathf.Clamp(verticalResolution, 1, 2048);
-			numColors = Mathf.Clamp(numColors, 2, 8);
+			numColors = Mathf.Clamp(numColors, 2, 16);
 
 			if (material)
 			{
@@ -86,6 +94,17 @@ namespace AlpacaSound
 				if (numColors > 5) material.SetColor ("_Color5", color5);
 				if (numColors > 6) material.SetColor ("_Color6", color6);
 				if (numColors > 7) material.SetColor ("_Color7", color7);
+                if (numColors > 8)
+                {
+                    material.SetColor("_Color8", color8);
+                    material.SetColor("_Color9", color9);
+                    material.SetColor("_Color10", color10);
+                    material.SetColor("_Color11", color11);
+                    material.SetColor("_Color12", color12);
+                    material.SetColor("_Color13", color13);
+                    material.SetColor("_Color14", color14);
+                    material.SetColor("_Color15", color15);
+                }
 				
 				RenderTexture scaled = RenderTexture.GetTemporary (horizontalResolution, verticalResolution);
 				scaled.filterMode = FilterMode.Point;
