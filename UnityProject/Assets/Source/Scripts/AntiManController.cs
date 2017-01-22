@@ -37,6 +37,7 @@ public class AntiManController : MonoBehaviour
         if (!waveParticles)
             Debug.LogWarning("Particles on player not found");
         JPL.Core.Sounds.PlaySound(boatIdle, JPL.SOUNDSETTING.SFX);
+
     }
 
     void CheckInput()
@@ -118,7 +119,21 @@ public class AntiManController : MonoBehaviour
             if (duck && !duck.IsDeath())
             {
                 duck.displacementVector = targetLineForward.normalized * DuckGameGlobalConfig.duckPushDistance * inputLength;
-            }
+				switch (duck.fatness)
+				{
+					case 1:
+						duck.displacementVector *= DuckGameGlobalConfig.fatness1PushMultiplier;
+						break;
+					case 2:
+						duck.displacementVector *= DuckGameGlobalConfig.fatness1PushMultiplier;
+						break;
+					case 3:
+						duck.displacementVector *= DuckGameGlobalConfig.fatness1PushMultiplier;
+						break;
+					default:
+						break;
+				}
+			}
         }
     }
 
