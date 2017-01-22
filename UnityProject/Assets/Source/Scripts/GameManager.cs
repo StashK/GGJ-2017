@@ -29,15 +29,21 @@ public class GameManager : MonoBehaviour
     public AudioClip vaporDefaultClip;
     public AudioSource killoffAudioSource;
 
+
+    public GameObject winTextObject;
     float moveSpeedCache;
     float sideMoveSpeedCache;
     float duckPushDistanceCache;
 	float quackSpamIntervalCache;
 
+    public int deathDucks = 0;
+    private int amountOfDucks = 0;
 	private static GameManager instance;
     public static GameManager Get { get { return instance; } }
 
     public static float GameIntroTime;
+
+    private string playerWonString = "";
 
 	// Use this for initialization
 	void Start()
@@ -56,6 +62,7 @@ public class GameManager : MonoBehaviour
             neededDuck.playerName = p.playerName;
             duckList.Add(neededDuck);
             steppers++;
+            amountOfDucks++;
         }
         startTime = Time.time;
         maxDistance = DuckGameGlobalConfig.startDistance + 3;
@@ -146,16 +153,21 @@ public class GameManager : MonoBehaviour
 					if (!d)
 						continue;
 					float duckDistance = Vector3.Distance(d.transform.position, new Vector3(0, duckStartY, 0));
-					if (duckDistance >= maxDistance) //if duck distance is higher than max distance, kill the duck
-						d.Kill();
-
+                    if (duckDistance > maxDistance +1)
+                    {//if duck distance is higher than max distance, kill the duck
+                        d.Kill();
+                    }
                     if (duckDistance <= DuckGameGlobalConfig.winDistance)
                     {
                         PlayerWon(d.playerName);
                         return;
                     }
+                    
                 }
             }
+
+            if (deathDucks >= amountOfDucks)
+                PlayerWon("Antiman");
         }
     }
 
@@ -170,16 +182,23 @@ public class GameManager : MonoBehaviour
             Debug.Log("killing duck");
             d.Kill();
         }
-
+        playerWonString = name;
         LeanTween.moveX(Camera.main.gameObject, -40, 2).setEase(LeanTweenType.easeInOutSine).setDelay(3f);
         LeanTween.moveY(Camera.main.gameObject, 10, 2).setEase(LeanTweenType.easeInOutSine).setDelay(3f);
         LeanTween.moveZ(Camera.main.gameObject, 15, 2).setEase(LeanTweenType.easeInOutSine).setDelay(3f);
 
         LeanTween.rotateX(Camera.main.gameObject, -5, 2).setEase(LeanTweenType.easeInOutSine).setDelay(3f);
         LeanTween.rotateY(Camera.main.gameObject, -200, 2).setEase(LeanTweenType.easeInOutSine).setDelay(3f);
-        LeanTween.rotateZ(Camera.main.gameObject, -10, 2).setEase(LeanTweenType.easeInOutSine).setDelay(3f);
+        LeanTween.rotateZ(Camera.main.gameObject, -10, 2).setEase(LeanTweenType.easeInOutSine).setDelay(3f).setOnComplete(TweenComplete);
 
-        FindObjectOfType<Light>().intensity = 0.5f;
+        
+    }
+
+    void TweenComplete()
+    {
+        GameObject.Find("Directional light").GetComponent<Light>().intensity = 0.5f;
+        winTextObject.SetActive(true);
+        winTextObject.GetComponent<Text>().text = playerWonString + " won!";
     }
 
     Duck GetFurtherstDuck()
