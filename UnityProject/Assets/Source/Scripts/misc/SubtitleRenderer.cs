@@ -28,15 +28,16 @@ public class SubtitleRenderer : MonoBehaviour
     {
         title.Alive = 1.0f / title.Size * 50.0f;
         queue.Add(title);
-    }
+		JPL.Core.Sounds.PlaySound( SubtitleRenderer.Get.Audio[Random.Range(0, SubtitleRenderer.Get.Audio.Count -1)], JPL.SOUNDSETTING.SFX);
 
-    // Use this for initialization
-    void Start()
+	}
+
+	// Use this for initialization
+	void Start()
     {
         instance = this;
 
         queue = new List<DuckTitles>();
-        JPL.Core.Sounds.PlaySound(Audio[Random.Range(0, Audio.Count)], JPL.SOUNDSETTING.SFX);
     }
 
     // Update is called once per frame
