@@ -90,9 +90,9 @@ public class AntiManController : MonoBehaviour
             if (!waveParticles.isEmitting)
                 waveParticles.Play();
             ParticleSystem.EmissionModule emissionModule = waveParticles.emission;
-            emissionModule.rateOverTimeMultiplier = inputLength * 50f;
+            emissionModule.rateOverTimeMultiplier = inputLength * 70f;
             ParticleSystem.MainModule mainModule = waveParticles.main;
-            mainModule.startSpeed = 20f * inputLength;
+            mainModule.startSpeed = 30f * inputLength;
 
             WavePlane.Get.CreateWave(transform.position, targetLineForward.normalized);
         }
