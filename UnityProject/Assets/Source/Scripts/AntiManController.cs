@@ -119,27 +119,30 @@ public class AntiManController : MonoBehaviour
             if (duck && !duck.IsDeath())
             {
                 duck.displacementVector = targetLineForward.normalized * DuckGameGlobalConfig.duckPushDistance * inputLength;
-				switch (duck.fatness)
-				{
-					case 1:
-						duck.displacementVector *= DuckGameGlobalConfig.fatness1PushMultiplier;
-						break;
-					case 2:
-						duck.displacementVector *= DuckGameGlobalConfig.fatness1PushMultiplier;
-						break;
-					case 3:
-						duck.displacementVector *= DuckGameGlobalConfig.fatness1PushMultiplier;
-						break;
-					default:
-						break;
-				}
-			}
+                switch (duck.fatness)
+                {
+                    case 1:
+                        duck.displacementVector *= DuckGameGlobalConfig.fatness1PushMultiplier;
+                        break;
+                    case 2:
+                        duck.displacementVector *= DuckGameGlobalConfig.fatness1PushMultiplier;
+                        break;
+                    case 3:
+                        duck.displacementVector *= DuckGameGlobalConfig.fatness1PushMultiplier;
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (GameManager.GameIntroTime > 0.0f)
+            return;
+
         CheckInput();
 
         UpdateWaving();

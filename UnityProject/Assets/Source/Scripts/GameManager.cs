@@ -3,7 +3,8 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour {
+public class GameManager : MonoBehaviour
+{
     public List<Duck> duckList;
     public bool isGameFinished = false;
     public float startTime;
@@ -11,10 +12,13 @@ public class GameManager : MonoBehaviour {
     public float lastDropOffTime;
     public HexGrid hexGrid;
     private float maxDistance;
-	public float duckStartY;
+    public float duckStartY;
 
-	// Use this for initialization
-	void Start () {
+    public static float GameIntroTime;
+
+    // Use this for initialization
+    void Start()
+    {
         float steps = 360.0f / AirConsoleManager.Instance.ActivePlayers().Count;
         int steppers = 0;
         foreach (AirConsoleManager.Player p in AirConsoleManager.Instance.ActivePlayers())
@@ -29,14 +33,19 @@ public class GameManager : MonoBehaviour {
             steppers++;
         }
         startTime = Time.time;
-        maxDistance = DuckGameGlobalConfig.startDistance +1;
-	}
-	
-	// Update is called once per frame
-	void Update () {
+        maxDistance = DuckGameGlobalConfig.startDistance + 1;
+        GameIntroTime = 3.0f;
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        GameIntroTime -= Time.deltaTime;
+
         if (!isGameFinished)
         {
-            if(!isPreFallOffFinished && Time.time >= startTime + DuckGameGlobalConfig.preDropOffTime) //Duck dieing starts
+            if (!isPreFallOffFinished && Time.time >= startTime + DuckGameGlobalConfig.preDropOffTime) //Duck dieing starts
             {
                 isPreFallOffFinished = true;
                 lastDropOffTime = Time.time;
@@ -54,7 +63,7 @@ public class GameManager : MonoBehaviour {
                     hexGrid.SetFalloff(Vector3.Distance(furtherstDuck.transform.position, Vector3.zero));
                     Debug.Log("someone lost");
                 }
-			} 
+            }
 
             foreach (Duck d in duckList)
             {
@@ -69,7 +78,7 @@ public class GameManager : MonoBehaviour {
                 }
             }
         }
-	}
+    }
 
     void PlayerWon(string name)
     {

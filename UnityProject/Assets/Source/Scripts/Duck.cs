@@ -13,7 +13,7 @@ public class Duck : MonoBehaviour, IComparable
     [Range(0, 1)]
     public float distance = 1.0f;
     public int fatness = 1;
-	private float fatnessTimer = 0f;
+    private float fatnessTimer = 0f;
 
     public Vector3 displacementVector;
     public float displacementRechargeLerp;
@@ -54,13 +54,13 @@ public class Duck : MonoBehaviour, IComparable
         rb = GetComponent<Rigidbody>();
         transform.LookAt(FindObjectOfType<AntiManController>().transform);
 
-		fatnessTimer = DuckGameGlobalConfig.removeDuckFatnessInterval;
-	}
+        fatnessTimer = DuckGameGlobalConfig.removeDuckFatnessInterval;
+    }
 
-	// Update is called once per frame
-	void FixedUpdate()
+    // Update is called once per frame
+    void FixedUpdate()
     {
-        if (isDeath)
+        if (isDeath || GameManager.GameIntroTime > 0.0f)
             return;
 
         transform.LookAt(FindObjectOfType<AntiManController>().transform);
@@ -108,18 +108,20 @@ public class Duck : MonoBehaviour, IComparable
 
     void Update()
     {
+        if (GameManager.GameIntroTime > 0.0f)
+            return;
         // transform.LookAt(GetComponent<AntiManController>().transform);
         transform.localScale = Vector3.Lerp(transform.localScale, new Vector3(fatness, fatness, fatness), 0.2f);
 
         displacementVector = Vector3.Lerp(displacementVector, Vector3.zero, displacementRechargeLerp);
 
-		if(fatnessTimer < 0f)
-		{
-			fatnessTimer = DuckGameGlobalConfig.removeDuckFatnessInterval;
-			if (fatness > 1)
-				fatness--;
-		}
-		fatnessTimer -= Time.deltaTime;
+        if (fatnessTimer < 0f)
+        {
+            fatnessTimer = DuckGameGlobalConfig.removeDuckFatnessInterval;
+            if (fatness > 1)
+                fatness--;
+        }
+        fatnessTimer -= Time.deltaTime;
 
         if (DuckGameGlobalConfig.drawDebugLines)
             Debug.DrawRay(transform.position, displacementVector, Color.green);
@@ -167,11 +169,11 @@ public class Duck : MonoBehaviour, IComparable
     {
         if (other.collider.tag == "BreadPickup")
         {
-			if (fatness < 3)
-			{
-				fatness++;
-				Destroy(other.gameObject);
-			}
+            if (fatness < 3)
+            {
+                fatness++;
+                Destroy(other.gameObject);
+            }
         }
     }
 }
