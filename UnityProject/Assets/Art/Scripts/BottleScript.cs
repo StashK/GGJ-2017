@@ -6,6 +6,7 @@ public class BottleScript : MonoBehaviour
 {
     private Vector3 startPos;
     public MeshRenderer render;
+    private bool prev = false;
 
     // Use this for initialization
     void Start()
@@ -16,11 +17,15 @@ public class BottleScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        render.enabled = GameManager.Get.vaporTrapMode;
+        if (prev != GameManager.Get.vaporTrapMode)
+        {
+            transform.position = startPos;
+            render.enabled = GameManager.Get.vaporTrapMode;
+            prev = GameManager.Get.vaporTrapMode;
+        }
         transform.position = transform.position + transform.forward * 0.33f;
 
         if (transform.position.z > 90)
             transform.position = startPos;
-        // transform.eulerAngles = new Vector3(transform.position.x + 1.0f, transform.position.y, transform.position.z);
     }
 }
