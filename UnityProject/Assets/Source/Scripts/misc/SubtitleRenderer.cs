@@ -13,6 +13,8 @@ public class DuckTitles
 public class SubtitleRenderer : MonoBehaviour
 {
     private static List<DuckTitles> queue;
+    private static AudioListener listener;
+    public List<AudioClip> Audio = new List<AudioClip>();
 
     public static void AddSubtitle(DuckTitles title)
     {
@@ -24,6 +26,8 @@ public class SubtitleRenderer : MonoBehaviour
     void Start()
     {
         queue = new List<DuckTitles>();
+
+        JPL.Core.Sounds.PlaySound(Audio[Random.Range(0, Audio.Count)], JPL.SOUNDSETTING.SFX);
     }
 
     // Update is called once per frame
