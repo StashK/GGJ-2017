@@ -16,8 +16,8 @@ public class AntiManController : MonoBehaviour
 
     [Range(0, 1)]
     public float targetLineLerp = 0.5f;
-    [Range(0, 0.1f)]
-    public float pushbackPlayerDistance = 0.01f;
+    [Range(100f, 10000f)]
+    public float duckPushForce = 0.01f;
 
 	public bool isBoosting = false;
 	public float boostTime = 2f;
@@ -81,16 +81,16 @@ public class AntiManController : MonoBehaviour
 		// Toggle isWaving and particles
 		if (inputLength > 0.05f)
         {
-            waveParticles.transform.rotation = Quaternion.LookRotation(targetLineForward, transform.up);
+            transform.rotation = Quaternion.LookRotation(targetLineForward, transform.up);
             isWaving = true;
             if (!waveParticles.isEmitting)
                 waveParticles.Play();
             ParticleSystem.EmissionModule emissionModule = waveParticles.emission;
             emissionModule.rateOverTimeMultiplier = inputLength * 50f;
             ParticleSystem.MainModule mainModule = waveParticles.main;
-            mainModule.startSpeed = 10f * inputLength;
+            mainModule.startSpeed = 20f * inputLength;
 
-            //WavePlane.Get.CreateWave(transform.position, targetLineForward.normalized);
+            WavePlane.Get.CreateWave(transform.position, targetLineForward.normalized);
         }
         else if (isWaving)
         {
@@ -109,17 +109,19 @@ public class AntiManController : MonoBehaviour
 
         foreach (Collider collider in gameObjectsInRange)
         {
+            Rigidbody RB = collider.GetComponent<Rigidbody>();
             Duck duck = collider.GetComponent<Duck>();
 
-            if (duck)
+			if (duck && !duck.IsDeath())
             {
-                duck.distance += pushbackPlayerDistance * inputLength;
+				if(RB)
+					RB.AddForce(targetLineForward * duckPushForce * inputLength, ForceMode.Force);
             }
         }
     }
 
-    // Update is called once per frame
-    void Update()
+	// Update is called once per frame
+	void Update()
     {
         CheckInput();
 

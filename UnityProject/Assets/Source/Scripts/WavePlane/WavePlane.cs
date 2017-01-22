@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using CielaSpike;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,7 +7,7 @@ public class Wave
 {
     public Vector3 position;
     public Vector3 direction;
-    public float speed = 100.0f;
+    public float speed = 50.0f;
 }
 
 public class WavePlane : MonoBehaviour
@@ -26,15 +27,21 @@ public class WavePlane : MonoBehaviour
 
     private float DeWaveTimer = 0.0f;
 
+    public Vector3[] vertices;
+
+    public static float[] HeightMap;
+
     // Use this for initialization
     void Start()
     {
         local = this;
+
+        //this.StartCoroutineAsync(Calc());
     }
 
     public void CreateWave(Vector3 position, Vector3 direction)
     {
-        if (DeWaveTimer < 0.075f)
+        if (DeWaveTimer < 0.15f)
             return;
 
         DeWaveTimer = 0.0f;
@@ -56,51 +63,131 @@ public class WavePlane : MonoBehaviour
     {
         DeWaveTimer += Time.deltaTime;
 
-        foreach (Wave wave in Waves)
+        //if (vertices != null && vertices.Length > 0)
+        //    GetComponent<MeshFilter>().mesh.vertices = vertices;
+        Calc2();
+    }
+
+    void Calc2()
+    {
+        foreach (Wave wave in this.Waves)
         {
             wave.position += wave.direction * Time.deltaTime * wave.speed;
-            if (wave.position.magnitude > 75.0f)
+            if (wave.position.magnitude > 50.0f)
             {
-                Waves.Remove(wave);
+                this.Waves.Remove(wave);
                 break;
             }
         }
+
+        Wave[] Waves = new Wave[this.Waves.Count];
+        this.Waves.CopyTo(Waves);
+
+        //Debug.Log(Waves.Length);
+
+
         Mesh mesh = GetComponent<MeshFilter>().mesh;
-        Vector3[] vertices = mesh.vertices;
+        Vector3[] vertices = (Vector3[])mesh.vertices.Clone();
+
+        float curY = transform.position.y;
+
+        //yield return Ninja.JumpBack;
         int i = 0;
+
+        List<float> tempMap = new List<float>();
+
+        float prevHeight = 0.0f;
 
         while (i < vertices.Length)
         {
+            Vector3 worldPt = vertices[i];
+            worldPt.y = 0.0f;
             float waveHeight = 0.0f;
+
             foreach (Wave wave in Waves)
             {
-                Vector3 worldPt = transform.TransformPoint(vertices[i]);
-                worldPt.y = 0.0f;
 
                 Vector3 playerPos = wave.position;
                 playerPos.y = 0.0f;
 
                 float distance = Vector3.Distance(playerPos, worldPt);
-                if (distance > 15.0f)
+                if (distance > 4.0f)
                     continue;
 
-                float localWaveHeight = (Mathf.Pow(distance, HeightPower)) * HeightMutliplier;
-                localWaveHeight = Mathf.Clamp(localWaveHeight, 0.0f, 1.0f);
-                localWaveHeight = 1.0f - localWaveHeight;
+                waveHeight += Mathf.Clamp(4.0f - distance, 0.0f, 2.0f) * 0.5f;
+            }
+            tempMap.Add(Mathf.Lerp(prevHeight, waveHeight, 0.25f));
+            tempMap.Add(Mathf.Lerp(prevHeight, waveHeight, 0.5f));
+            tempMap.Add(Mathf.Lerp(prevHeight, waveHeight, 0.75f));
+            tempMap.Add(waveHeight);
+            prevHeight = waveHeight;
+            i += 4;
+        }
 
-                Vector3 directional = worldPt - playerPos;
-                float dirScale = Vector3.Dot(wave.direction, directional) * 0.1f;
+
+        //yield return Ninja.JumpToUnity;
+
+        HeightMap = tempMap.ToArray();
+    }
+
+    IEnumerator Calc()
+    {
+        yield return Ninja.JumpToUnity;
+
+        foreach (Wave wave in this.Waves)
+        {
+            wave.position += wave.direction * Time.deltaTime * wave.speed;
+            if (wave.position.magnitude > 25.0f)
+            {
+                this.Waves.Remove(wave);
+                break;
+            }
+        }
+
+        Wave[] Waves = new Wave[this.Waves.Count];
+        this.Waves.CopyTo(Waves);
 
 
-                waveHeight += transform.position.y + (localWaveHeight * 3.0f * dirScale);
+        Mesh mesh = GetComponent<MeshFilter>().mesh;
+        Vector3[] vertices = (Vector3[])mesh.vertices.Clone();
+
+        float curY = transform.position.y;
+
+        //yield return Ninja.JumpBack;
+        int i = 0;
+
+        List<float> tempMap = new List<float>();
+
+        while (i < vertices.Length)
+        {
+            Vector3 worldPt = vertices[i];
+            worldPt.y = 0.0f;
+            float waveHeight = 0.0f;
+
+            foreach (Wave wave in Waves)
+            {
+
+                Vector3 playerPos = wave.position;
+                playerPos.y = 0.0f;
+
+                float distance = Vector3.Distance(playerPos, worldPt);
+                if (distance > 5.0f)
+                    break;
+
+                waveHeight += 1.0f / distance;
+                waveHeight = Mathf.Clamp(waveHeight, 0.0f, 1.0f) * 1.5f;
             }
 
-            vertices[i].y += transform.position.y + waveHeight;
+            tempMap.Add(waveHeight);
             i++;
         }
-        mesh.vertices = vertices;
-        mesh.RecalculateBounds();
-        //mesh.RecalculateNormals();
+
+
+        //yield return Ninja.JumpToUnity;
+
+        HeightMap = tempMap.ToArray();
+
+        //this.StartCoroutineAsync(Calc());
     }
 
     private void OnDrawGizmos()

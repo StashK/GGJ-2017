@@ -12,7 +12,7 @@ public class Duck : MonoBehaviour, IComparable
     public float angle = 0;
     [Range(0, 1)]
     public float distance = 1.0f;
-	public float fatness = 1.0f;
+    public float fatness = 1.0f;
 
     private bool isDeath = false;
     private Rigidbody rb;
@@ -41,8 +41,8 @@ public class Duck : MonoBehaviour, IComparable
     void Start()
     {
         airController = AirConsoleManager.Instance.GetPlayer(playerId);
-        PastelGenerator.Lightness = 0.3f;
-        GetComponent<Renderer>().material.color = PastelGenerator.Generate();
+        PastelGenerator.Lightness = 0.8f;
+        transform.Find("Ducky_Body").GetComponent<Renderer>().material.color = PastelGenerator.Generate();
         rb = GetComponent<Rigidbody>();
         transform.LookAt(FindObjectOfType<AntiManController>().transform);
     }
@@ -50,12 +50,9 @@ public class Duck : MonoBehaviour, IComparable
     // Update is called once per frame
     void FixedUpdate()
     {
-        Debug.Log(isDeath);
-        if(isDeath)
+        if (isDeath)
             return;
 
-
-        Debug.Log(transform.forward);
         transform.LookAt(FindObjectOfType<AntiManController>().transform);
         rb.velocity = transform.forward * DuckGameGlobalConfig.moveSpeed;
 
@@ -68,9 +65,9 @@ public class Duck : MonoBehaviour, IComparable
             tapped = false;
             Debug.Log("tapped is false");
         }
-        
-        
-        if (airController.GetButtonDown(InputAction.Gameplay.MoveLeft))
+
+
+        if (airController.GetButton(InputAction.Gameplay.MoveLeft))
         {
             GoLeft();
 
@@ -80,8 +77,8 @@ public class Duck : MonoBehaviour, IComparable
                 Debug.Log("Double tapped");
             }
         }
-        
-        if (airController.GetButtonDown(InputAction.Gameplay.MoveRight))
+
+        if (airController.GetButton(InputAction.Gameplay.MoveRight))
         {
             GoRight();
 
@@ -101,8 +98,29 @@ public class Duck : MonoBehaviour, IComparable
 
     void Update()
     {
-       // transform.LookAt(GetComponent<AntiManController>().transform);
+        // transform.LookAt(GetComponent<AntiManController>().transform);
+        transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one * Mathf.Pow(fatness, -3), 0.1f);
+        if (airController.GetButtonDown(InputAction.Gameplay.WeaponLeft))
+        {
+            SubtitleRenderer.AddSubtitle(new DuckTitles
+            {
+                Text = "Quack !",
+                Colour = transform.Find("Ducky_Body").GetComponent<Renderer>().material.color,
+                Size = 32
+            });
+        }
+    }
 
+    public float GetTerrainHeight(float xPos, float zPos)
+    {
+        int x = (int)(xPos) + 25;
+        int z = (int)(zPos) + 25;
+
+        int i = x + z * 25;
+
+        float height = WavePlane.HeightMap[i];
+
+        return height;
     }
 
     private void GoLeft()
@@ -121,51 +139,12 @@ public class Duck : MonoBehaviour, IComparable
 
     }
 
-	void OnCollisionEnter(Collision collision)
-    {
-		
-        /*if (collision.collider.tag == "Player")
-        {
-            Debug.Log(collision.contacts[0].point);
-            //HackyHacky sorta working
-            Vector3 right = Vector3.Cross(this.transform.position, Vector3.up);
-            Vector3 from = this.transform.position;
-            Vector3 to = collision.transform.position;
-            Vector3 centerToSide = (to - from).normalized * (transform.localScale.x);
-            from += centerToSide;
-            to -= centerToSide;
-            float diffAngle = Vector3.Angle(from, to);
-            if (!isDoubleTapped)
-            {
-                if (Vector3.Dot(right, (from - to)) < 0)
-                {
-                    angle += diffAngle * 0.1f;
-                }
-                else
-                {
-                    angle -= diffAngle * 0.1f;
-                }
-            }
-            else
-            {
-                if (Vector3.Dot(right, (from - to)) < 0)
-                {
-                    collision.transform.GetComponent<Duck>().angle -= diffAngle * 0.8f;
-                }
-                else
-                {
-                    collision.transform.GetComponent<Duck>().angle += diffAngle * 0.8f;
-                }
-            }
-        }
-
-		if(collision.collider.tag == "BreadPickup")
+	public void OnCollisionEnter(Collision other)
+	{
+		if(other.collider.tag == "BreadPickup")
 		{
-			Debug.Log("BreadPickup");
 			fatness++;
-			transform.localScale = Vector3.one * fatness;
-			Destroy(collision.collider.gameObject);
+			Destroy(other.gameObject);
 		}
-		*/
-    }
+	}
 }
