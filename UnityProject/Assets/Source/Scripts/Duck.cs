@@ -15,6 +15,8 @@ public class Duck : MonoBehaviour, IComparable
 	public int fatness = 1;
     private float fatnessTimer = 0f;
 
+	public AudioSource audioSource;
+
 	public Vector3 displacementVector;
 	public float displacementRechargeLerp;
 
@@ -180,6 +182,8 @@ public class Duck : MonoBehaviour, IComparable
 
 	public void Kill()
 	{
+		if (!isDeath)
+			audioSource.PlayOneShot(audioSource.clip);
 		isDeath = true;
 
 	}
