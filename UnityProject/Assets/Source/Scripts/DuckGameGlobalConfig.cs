@@ -16,4 +16,10 @@ public class DuckGameGlobalConfig {
     public static float gridStartDistance = 25f;
 
 	public static bool drawDebugLines = false;
+
+	public static float removeDuckFatnessInterval = 10f;
+
+	public static float fatness1PushMultiplier = 1f;
+	public static float fatness2PushMultiplier = 0.8f;
+	public static float fatness3PushMultiplier = 0.6f;
 }
