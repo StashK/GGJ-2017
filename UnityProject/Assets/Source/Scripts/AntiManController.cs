@@ -80,6 +80,9 @@ public class AntiManController : MonoBehaviour
         if (boostSprite)
             boostSprite.fillAmount = (boostTimer / boostTime);
 
+		if (GameManager.Get.vaporTrapMode)
+			inputLength *= 2f;
+		
         //Debug.Log("InputLenght: " + inputLength);
 
         // Toggle isWaving and particles
@@ -106,6 +109,7 @@ public class AntiManController : MonoBehaviour
 
     void PushBackDucks()
     {
+
         Collider[] gameObjectsInRange = Physics.OverlapCapsule(transform.position, transform.position + targetLineForward.normalized * targetLineDistance * inputLength, 1.5f);
 
         if (DuckGameGlobalConfig.drawDebugLines)
@@ -116,9 +120,12 @@ public class AntiManController : MonoBehaviour
             Rigidbody RB = collider.GetComponent<Rigidbody>();
             Duck duck = collider.GetComponent<Duck>();
 
+
             if (duck && !duck.IsDeath())
             {
-                duck.displacementVector = targetLineForward.normalized * DuckGameGlobalConfig.duckPushDistance * inputLength;
+				Debug.Log((transform.position - duck.transform.position).magnitude);
+
+				duck.displacementVector = targetLineForward.normalized * DuckGameGlobalConfig.duckPushDistance * inputLength;
 				switch (duck.fatness)
 				{
 					case 1:
