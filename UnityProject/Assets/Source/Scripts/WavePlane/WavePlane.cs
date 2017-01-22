@@ -32,7 +32,7 @@ public class WavePlane : MonoBehaviour
     public Vector3[] vertices;
     Vector3[] avgPoints;
     public static float[] HeightMap;
-    public static float[,] heightMap2;
+    public static float[,] heightMap2 = new float[101, 101];
 
     // Use this for initialization
     void Start()
@@ -48,11 +48,13 @@ public class WavePlane : MonoBehaviour
 
         Debug.Log(GridPos(Vector3.zero));
         Debug.Log(GridToWorld(new Vector2(50, 50)));
+
+        this.StartCoroutineAsync(CalcOptimized());
     }
 
     public void CreateWave(Vector3 position, Vector3 direction)
     {
-        if (DeWaveTimer < 0.15f)
+        if (DeWaveTimer < 0.1f)
             return;
 
         DeWaveTimer = 0.0f;
@@ -70,7 +72,7 @@ public class WavePlane : MonoBehaviour
     }
 
     // Update is called once per frame
-    void LateUpdate()
+    void Update()
     {
         DeWaveTimer += Time.deltaTime;
 
@@ -86,7 +88,16 @@ public class WavePlane : MonoBehaviour
         //if (vertices != null && vertices.Length > 0)
         //    GetComponent<MeshFilter>().mesh.vertices = vertices;
         //Calc2();
-        CalcOptimized();
+        foreach (Wave wave in this.Waves)
+        {
+            wave.position += wave.direction * Time.deltaTime * wave.speed;
+            if (wave.position.magnitude > 100.0f)
+            {
+                this.Waves.Remove(wave);
+                break;
+            }
+        }
+        //CalcOptimized();
     }
 
     public Vector3 CenterOfVectors(Vector3[] vectors)
@@ -160,22 +171,15 @@ public class WavePlane : MonoBehaviour
         //yield return Ninja.JumpToUnity;
     }
 
-    void CalcOptimized ()
+    IEnumerator CalcOptimized ()
     {
-        heightMap2 = new float[101, 101];
+        yield return Ninja.JumpToUnity;
+        float[,] heightMap = new float[101, 101];
+        yield return Ninja.JumpBack;
+        
 
-        foreach (Wave wave in this.Waves)
-        {
-            wave.position += wave.direction * Time.deltaTime * wave.speed;
-            if (wave.position.magnitude > 100.0f)
-            {
-                this.Waves.Remove(wave);
-                break;
-            }
-        }
-
-        Wave[] Waves = new Wave[this.Waves.Count];
-        this.Waves.CopyTo(Waves);
+        //Wave[] Waves = new Wave[this.Waves.Count];
+        //this.Waves.CopyTo(Waves);
 
         foreach (Wave wave in Waves)
         {
@@ -183,20 +187,23 @@ public class WavePlane : MonoBehaviour
             int xPos = (int)gridPos.x;
             int yPos = (int)gridPos.y;
 
-            for (int i = -2; i < 2; i++)
+            for (int i = -3; i < 3; i++)
             {
-                for (int j= -2; j < 2; j++)
+                for (int j= -3; j < 3; j++)
                 {
-                    if (xPos + i < 0 || xPos + i > 99) return;
-                    if (yPos + j < 0 || yPos + j > 99) return;
+                    if (xPos + i < 0 || xPos + i > 99) continue;
+                    if (yPos + j < 0 || yPos + j > 99) continue;
 
                     float distance = Vector3.Distance(wave.position, GridToWorld(new Vector2(xPos + i, yPos + j)));
 
                     //Debug.Log((xPos + i) + " " + (yPos + j) + " " + GridToWorld(new Vector2(xPos + i, yPos + j)));
-                    heightMap2[xPos + i, yPos + j] = 2.5f - distance;
+                    heightMap[xPos + i, yPos + j] = Mathf.Clamp((8f - distance * 2) + heightMap[xPos + i, yPos + j], 0, 5f);
                 }
             }
         }
+        yield return Ninja.JumpToUnity;
+        heightMap2 = heightMap;
+        this.StartCoroutineAsync(CalcOptimized());
     }
 
     public static Vector2 GridPos (Vector3 worldpos)
