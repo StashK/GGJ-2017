@@ -16,6 +16,8 @@ public class MainMenu : MonoBehaviour {
 	float lastSelectTime = 0f;
 	bool iconSelected = false;
 
+	public AudioClip mouseClick;
+
 	// Use this for initialization
 	void Start () {
 		
@@ -23,7 +25,10 @@ public class MainMenu : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
+		if(Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
+		{
+			GetComponent<AudioSource>().PlayOneShot(mouseClick);
+		}
 	}
 
     public void LoadGameplay ()

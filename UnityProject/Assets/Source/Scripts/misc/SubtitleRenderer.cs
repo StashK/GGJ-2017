@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DuckTitles
 {
     public Color Colour;
+	public Vector3 Position;
     public int Size;
     public string Text;
     public float Alive;
@@ -20,16 +22,21 @@ public class SubtitleRenderer : MonoBehaviour
         }
     }
     private static SubtitleRenderer instance;
+	public GameObject quackObject;
+	public Canvas quackCanvas;
 
-    private static List<DuckTitles> queue;
+	private static List<DuckTitles> queue;
     public List<AudioClip> Audio = new List<AudioClip>();
 
-    public static void AddSubtitle(DuckTitles title)
+    public void AddSubtitle(DuckTitles title, Color color)
     {
         title.Alive = 1.0f / title.Size * 50.0f;
         queue.Add(title);
 		JPL.Core.Sounds.PlaySound( SubtitleRenderer.Get.Audio[Random.Range(0, SubtitleRenderer.Get.Audio.Count -1)], JPL.SOUNDSETTING.SFX);
-
+		Text quack = Instantiate(quackObject, title.Position, Quaternion.identity).GetComponent<Text>();
+		quack.transform.SetParent(quackCanvas.transform);
+		quack.transform.up = Vector3.up;
+		quack.color = color;
 	}
 
 	// Use this for initialization
@@ -52,21 +59,5 @@ public class SubtitleRenderer : MonoBehaviour
                 break;
             }
         }
-    }
-
-    void OnGUI()
-    {
-        float heightOff = 0.0f;
-        foreach (DuckTitles current in queue)
-        {
-            GUIStyle style = new GUIStyle(GUI.skin.label);
-            style.fontSize = current.Size;
-            GUI.color = current.Colour;
-            GUI.contentColor = current.Colour;
-
-            GUI.Label(new Rect(128, 256 + heightOff, Screen.width - 256, 256), current.Text, style);
-            heightOff += style.CalcSize(new GUIContent(current.Text)).y;
-        }
-
     }
 }
