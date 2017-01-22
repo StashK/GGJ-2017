@@ -16,8 +16,6 @@ public class AntiManController : MonoBehaviour
 
     [Range(0, 1)]
     public float targetLineLerp = 0.5f;
-    [Range(100f, 10000f)]
-    public float duckPushForce = 0.01f;
 
 	public bool isBoosting = false;
 	public float boostTime = 2f;
@@ -27,7 +25,6 @@ public class AntiManController : MonoBehaviour
 
 	public ParticleSystem waveParticles;
 
-    public bool drawDebugLines;
     public bool isWaving;
 
     // Use this for initialization
@@ -104,7 +101,7 @@ public class AntiManController : MonoBehaviour
     {
         Collider[] gameObjectsInRange = Physics.OverlapCapsule(transform.position, transform.position + targetLineForward.normalized * targetLineDistance * inputLength, 1.5f);
 
-        if (drawDebugLines)
+        if (DuckGameGlobalConfig.drawDebugLines)
             Debug.DrawRay(transform.position, targetLineForward.normalized * targetLineDistance * inputLength, Color.red);
 
         foreach (Collider collider in gameObjectsInRange)
@@ -114,8 +111,7 @@ public class AntiManController : MonoBehaviour
 
 			if (duck && !duck.IsDeath())
             {
-				if(RB)
-					RB.AddForce(targetLineForward * duckPushForce * inputLength, ForceMode.Force);
+				duck.displacementVector = targetLineForward.normalized * DuckGameGlobalConfig.duckPushDistance * inputLength;
             }
         }
     }

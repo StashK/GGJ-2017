@@ -14,7 +14,10 @@ public class Duck : MonoBehaviour, IComparable
     public float distance = 1.0f;
     public float fatness = 1.0f;
 
-    private bool isDeath = false;
+	public Vector3 displacementVector;
+	public float displacementRechargeLerp;
+
+	private bool isDeath = false;
     private Rigidbody rb;
     private bool tapped = false;
     private bool isDoubleTapped = false;
@@ -54,7 +57,7 @@ public class Duck : MonoBehaviour, IComparable
             return;
 
         transform.LookAt(FindObjectOfType<AntiManController>().transform);
-        rb.velocity = transform.forward * DuckGameGlobalConfig.moveSpeed;
+        rb.velocity = transform.forward * DuckGameGlobalConfig.moveSpeed + displacementVector;
 
         if (tapped)
             doubleTapCounter++;
@@ -100,7 +103,13 @@ public class Duck : MonoBehaviour, IComparable
     {
         // transform.LookAt(GetComponent<AntiManController>().transform);
         transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one * Mathf.Pow(fatness, -3), 0.1f);
-        if (airController.GetButtonDown(InputAction.Gameplay.WeaponLeft))
+
+		displacementVector = Vector3.Lerp(displacementVector, Vector3.zero, displacementRechargeLerp);
+
+		if(DuckGameGlobalConfig.drawDebugLines)
+			Debug.DrawRay(transform.position, displacementVector, Color.green);
+
+		if (airController.GetButtonDown(InputAction.Gameplay.WeaponLeft))
         {
             SubtitleRenderer.AddSubtitle(new DuckTitles
             {
@@ -125,12 +134,12 @@ public class Duck : MonoBehaviour, IComparable
 
     private void GoLeft()
     {
-        rb.velocity += transform.right;
+		displacementVector += transform.right * DuckGameGlobalConfig.sideMoveSpeed;
     }
 
     private void GoRight()
     {
-        rb.velocity -= transform.right;
+		displacementVector -= transform.right * DuckGameGlobalConfig.sideMoveSpeed;
     }
 
     public void Kill()
