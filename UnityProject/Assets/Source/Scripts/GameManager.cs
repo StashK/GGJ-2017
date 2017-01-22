@@ -119,6 +119,7 @@ public class GameManager : MonoBehaviour
 				DuckGameGlobalConfig.duckPushDistance = 30f;
 				DuckGameGlobalConfig.quackSpamInterval = 0f;
 				quakCounterText.gameObject.SetActive(false);
+				PixelController.SetTargetAlpha(1f, .2f);
 			}
 
             if (vaporTrapMode)
@@ -138,6 +139,7 @@ public class GameManager : MonoBehaviour
 					DuckGameGlobalConfig.quackSpamInterval = quackSpamIntervalCache;
 					vaporTrapTimer = vaporTrapClip.length;
 					quakCounterText.gameObject.SetActive(true);
+					PixelController.SetTargetAlpha(0f, 1f);
 				}
 			}
 			else

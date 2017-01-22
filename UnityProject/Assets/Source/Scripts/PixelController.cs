@@ -22,10 +22,10 @@ public class PixelController : MonoBehaviour {
     }
 
 
-    public static void SetTargetAlpha (float f)
+    public static void SetTargetAlpha (float f, float t = 1f)
     {
         Instance.targetAlpha = f;
-        LeanTween.alpha(Instance.image.rectTransform, f, 1f);
+        LeanTween.alpha(Instance.image.rectTransform, f, t);
     }
 
 	// Update is called once per frame
