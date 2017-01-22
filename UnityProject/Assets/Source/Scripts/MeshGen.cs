@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MeshGen : MonoBehaviour {
+public class MeshGen : MonoBehaviour
+{
 
     public Vector3[] vertices;
     public int[] triangles;
@@ -17,31 +18,80 @@ public class MeshGen : MonoBehaviour {
     public float distance = 25f;
     public static float curDistance = 25f;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start()
+    {
         CreateMesh(sizeX, sizeY, size);
 
         this.StartCoroutineAsync(Test());
-
-    }
-	
-	// Update is called once per frame
-	void Update () {
-        
-
-
     }
 
-    IEnumerator Test ()
+    public void SetCurDistance(float newDistance)
     {
+        curDistance = newDistance;
+    }
+
+    //public void LateUpdate ()
+    //{
+    //    float[] height;
+
+    //    if (WavePlane.HeightMap != null)
+    //        height = (float[])WavePlane.HeightMap.Clone();
+    //    else
+    //        height = new float[vertices.Length];
+
+    //    //yield return Ninja.JumpBack;
+    //    curDistance = distance;
+
+    //    int vIndex = 0;
+    //    for (int i = 0; i < sizeX; i++)
+    //    {
+    //        for (int j = 0; j < sizeX; j++)
+    //        {
+    //            Quad q = quads[i, j];
+    //            q.Calculate();
+
+    //            int triangleIndex = vIndex;
+    //            // copy vertices
+    //            for (int k = 0; k < q.vertices.Length; k++)
+    //            {
+    //                vertices[vIndex] = q.vertices[k];
+    //                vertices[vIndex].y += height[vIndex];
+    //                vIndex++;
+    //            }
+
+    //            // set triangles
+    //            //vertices[triangleIndex] = triangleIndex;
+    //        }
+    //    }
+
+    //    //yield return Ninja.JumpToUnity;
+
+    //    //GetComponent<MeshFilter>().mesh.Clear();
+    //    GetComponent<MeshFilter>().sharedMesh.vertices = vertices;
+    //}
+
+    IEnumerator Test()
+    {
+        yield return Ninja.JumpToUnity;
+        //vertices = GetComponent<MeshFilter>().mesh.vertices;
+        float[] height;
+
+        if (WavePlane.HeightMap != null)
+            height = (float[])WavePlane.HeightMap.Clone();
+        else
+            height = new float[vertices.Length];
+
+        yield return Ninja.JumpBack;
         curDistance = distance;
 
         int vIndex = 0;
+        Quad q;
         for (int i = 0; i < sizeX; i++)
         {
             for (int j = 0; j < sizeX; j++)
             {
-                Quad q = quads[i, j];
+                q = quads[i, j];
                 q.Calculate();
 
                 int triangleIndex = vIndex;
@@ -49,6 +99,7 @@ public class MeshGen : MonoBehaviour {
                 for (int k = 0; k < q.vertices.Length; k++)
                 {
                     vertices[vIndex] = q.vertices[k];
+                    //vertices[vIndex].y += height[vIndex];
                     vIndex++;
                 }
 
@@ -59,13 +110,14 @@ public class MeshGen : MonoBehaviour {
 
         yield return Ninja.JumpToUnity;
 
-        GetComponent<MeshFilter>().mesh.Clear();
-        GetComponent<MeshFilter>().mesh.vertices = vertices;
+        //GetComponent<MeshFilter>().mesh.Clear();
+        GetComponent<MeshFilter>().sharedMesh.vertices = vertices;
+        //yield return new WaitForEndOfFrame();
 
         this.StartCoroutineAsync(Test());
     }
 
-    void CreateMesh (int sizeX, int sizeY, float size = 1f)
+    void CreateMesh(int sizeX, int sizeY, float size = 1f)
     {
         Debug.Log("Create Mesh");
 
@@ -92,7 +144,7 @@ public class MeshGen : MonoBehaviour {
                 {
                     vertices[vIndex] = q.vertices[k];
                     uv[vIndex] = q.uv[k];
-                    triangles[vIndex] =  vIndex;
+                    triangles[vIndex] = vIndex;
                     vIndex++;
                 }
 
@@ -107,16 +159,19 @@ public class MeshGen : MonoBehaviour {
         m.uv = uv;
         m.RecalculateNormals();
 
-        GetComponent<MeshFilter>().mesh = m;
+        GetComponent<MeshFilter>().sharedMesh = m;
     }
-    
+
     public class Quad
     {
         public bool active = true;
-        public bool active1 { get { return center1.magnitude < MeshGen.curDistance; } }
-        public bool active2 { get { return center2.magnitude < MeshGen.curDistance; } }
+        public bool active1 { get { return center1Magnitude < MeshGen.curDistance; } }
+        public bool active2 { get { return center2Magnitude < MeshGen.curDistance; } }
         public Vector3 center1;
+        public float center1Magnitude;
         public Vector3 center2;
+        public float center2Magnitude;
+        public float random;
 
         private Vector3[] originalVertices = new Vector3[6];
         public Vector3[] vertices = new Vector3[6];
@@ -125,7 +180,7 @@ public class MeshGen : MonoBehaviour {
         private Vector3 start;
         private Vector3 end;
 
-        public Quad (Vector3 start, Vector3 end)
+        public Quad(Vector3 start, Vector3 end)
         {
             this.start = start;
             this.end = end;
@@ -135,6 +190,10 @@ public class MeshGen : MonoBehaviour {
             originalVertices = (Vector3[])vertices.Clone();
             center1 = (originalVertices[0] + originalVertices[1] + originalVertices[2]) / 3f;
             center2 = (originalVertices[3] + originalVertices[4] + originalVertices[5]) / 3f;
+            center1Magnitude = center1.magnitude;
+            center2Magnitude = center2.magnitude;
+
+            random = Random.Range(0.8f, 0.95f);
 
             for (int i = 0; i < 6; i++)
             {
@@ -144,35 +203,43 @@ public class MeshGen : MonoBehaviour {
 
         public void Calculate()
         {
-            Calculate(start, end);
+            if (active)
+                Calculate(start, end);
         }
 
-        private void Calculate (Vector3 start, Vector3 end)
+        private void Calculate(Vector3 start, Vector3 end)
         {
-            if (active1)
+
+            if (active1 && vertices[0] == Vector3.zero)
             {
                 vertices[2] = new Vector3(start.x, 0f, start.z);
                 vertices[1] = new Vector3(end.x, 0f, start.z);
                 vertices[0] = new Vector3(start.x, 0f, end.z);
             }
-            else
+            else if (!active1)
             {
-                vertices[2] = Vector3.zero;
-                vertices[1] = Vector3.zero;
-                vertices[0] = Vector3.zero;
+                vertices[2] = (center1 + ((vertices[2] - center1)) * random);
+                vertices[1] = (center1 + ((vertices[1] - center1)) * random);
+                vertices[0] = (center1 + ((vertices[0] - center1)) * random);
             }
 
-            if (active2)
+            if (active2 && vertices[3] == Vector3.zero)
             {
                 vertices[5] = new Vector3(start.x, 0f, end.z);
                 vertices[4] = new Vector3(end.x, 0f, start.z);
                 vertices[3] = new Vector3(end.x, 0f, end.z);
             }
-            else
+            else if (!active2)
             {
-                vertices[5] = Vector3.zero;
-                vertices[4] = Vector3.zero;
-                vertices[3] = Vector3.zero;
+                vertices[5] = (center2 + ((vertices[5] - center2)) * random);
+                vertices[4] = (center2 + ((vertices[4] - center2)) * random);
+                vertices[3] = (center2 + ((vertices[3] - center2)) * random);
+            }
+
+            if (!active1 && !active2 && (vertices[5] - center2).magnitude < 0.1f)
+            {
+                active = false;
+                vertices = new Vector3[6];
             }
         }
     }
