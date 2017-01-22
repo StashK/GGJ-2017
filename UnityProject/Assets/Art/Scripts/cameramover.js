@@ -1,8 +1,8 @@
 ﻿#pragma strict
-
+/*
 var counter = 0;
 var win = false;
-
+*/
 function Start()
 {
 
@@ -19,7 +19,7 @@ function Start()
 
 function Update () {
 	
-    counter++;
+  /*  counter++;
 
     if (counter >= 100)
     {win = true;}
@@ -35,5 +35,5 @@ function Update () {
         LeanTween.rotateZ( gameObject, -10, 2).setEase( LeanTweenType.easeInOutSine ).setDelay(3f);
 
     };
-
+*/
 }
