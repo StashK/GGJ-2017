@@ -15,16 +15,42 @@ public class MeshGen : MonoBehaviour
     public int sizeY = 5;
     public float size = 1f;
 
-    public float distance = 25f;
-    public static float curDistance = 25f;
+    public static float curDistance;
 
     // Use this for initialization
     void Start()
     {
-		curDistance = 100f;
+		curDistance = DuckGameGlobalConfig.startDistance + 2;
         CreateMesh(sizeX, sizeY, size);
 
         this.StartCoroutineAsync(Test());
+    }
+
+    void LateUpdate()
+    {
+        Quad q;
+        int vIndex = 0;
+        for (int i = 0; i < sizeX; i++)
+        {
+            for (int j = 0; j < sizeX; j++)
+            {
+                q = quads[i, j];
+
+                int triangleIndex = vIndex;
+                // copy vertices
+                for (int k = 0; k < q.vertices.Length; k++)
+                {
+                    vertices[vIndex] = q.vertices[k];
+                    //vertices[vIndex].y += height[vIndex];
+                    Vector2 gridPos = WavePlane.GridPos(vertices[vIndex]);
+                    vertices[vIndex].y += WavePlane.heightMap2[(int)gridPos.x, (int)gridPos.y];
+                    vIndex++;
+                }
+
+                // set triangles
+                //vertices[triangleIndex] = triangleIndex;
+            }
+        }
     }
 
     public void SetCurDistance(float newDistance)
@@ -85,9 +111,11 @@ public class MeshGen : MonoBehaviour
 
         float[,] height = (float[,])WavePlane.heightMap2.Clone();
 
+        if (height == null) Debug.Log("hjeight 0");
         if (height == null) height = new float[101,101];
 
         yield return Ninja.JumpBack;
+        //Vector3[] vertices = new Vector3[this.vertices.Length];
         //curDistance = distance;
 
         int vIndex = 0;
@@ -99,16 +127,16 @@ public class MeshGen : MonoBehaviour
                 q = quads[i, j];
                 q.Calculate();
 
-                int triangleIndex = vIndex;
-                // copy vertices
-                for (int k = 0; k < q.vertices.Length; k++)
-                {
-                    vertices[vIndex] = q.vertices[k];
-                    //vertices[vIndex].y += height[vIndex];
-                    Vector2 gridPos = WavePlane.GridPos(vertices[vIndex]);
-                    vertices[vIndex].y += height[(int)gridPos.x, (int)gridPos.y];
-                    vIndex++;
-                }
+                //int triangleIndex = vIndex;
+                //// copy vertices
+                //for (int k = 0; k < q.vertices.Length; k++)
+                //{
+                //    vertices[vIndex] = q.vertices[k];
+                //    //vertices[vIndex].y += height[vIndex];
+                //    Vector2 gridPos = WavePlane.GridPos(vertices[vIndex]);
+                //    vertices[vIndex].y += height[(int)gridPos.x, (int)gridPos.y];
+                //    vIndex++;
+                //}
 
                 // set triangles
                 //vertices[triangleIndex] = triangleIndex;
@@ -118,6 +146,7 @@ public class MeshGen : MonoBehaviour
         yield return Ninja.JumpToUnity;
 
         //GetComponent<MeshFilter>().mesh.Clear();
+        //this.vertices = vertices;
         GetComponent<MeshFilter>().sharedMesh.vertices = vertices;
         //yield return new WaitForEndOfFrame();
 
