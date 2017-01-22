@@ -37,6 +37,7 @@ public class AntiManController : MonoBehaviour
             Debug.LogWarning("Particles on player not found");
         JPL.Core.Sounds.PlaySound(boatIdle, JPL.SOUNDSETTING.SFX);
 
+
     }
 
     void CheckInput()

@@ -8,7 +8,7 @@ public class Wave
 {
     public Vector3 position;
     public Vector3 direction;
-    public float speed = 50.0f;
+    public float speed = 100f;
 }
 
 public class WavePlane : MonoBehaviour

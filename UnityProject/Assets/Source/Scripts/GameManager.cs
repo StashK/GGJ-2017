@@ -69,9 +69,10 @@ public class GameManager : MonoBehaviour
         GameIntroTime = 3.0f;
 
 
-        maxQuaks = activePlayers * 20;
-
-    }
+        maxQuaks = activePlayers * 15;
+		DuckGameGlobalConfig.duckPushDistance *= (1f + (activePlayers * 0.5f));
+		Debug.Log(DuckGameGlobalConfig.duckPushDistance);
+	}
 
     // Update is called once per frame
     void Update()
@@ -96,17 +97,15 @@ public class GameManager : MonoBehaviour
 					/*
                     Duck furtherstDuck = GetFurtherstDuck();
                     furtherstDuck.Kill();
-                    maxDistance = Vector3.Distance(furtherstDuck.transform.position, Vector3.zero);
 					//hexGrid.SetFalloff(Vector3.Distance(furtherstDuck.transform.position, Vector3.zero));
 					*/
+
+
 					MeshGen.curDistance -= 5f;
+					maxDistance = MeshGen.curDistance;
+
                     Debug.Log("someone lost");
                 }
-				if(!killOffSoundPlayed && Time.time >= lastDropOffTime + DuckGameGlobalConfig.dropOffTime - killoffAudioSource.clip.length )
-				{
-					killoffAudioSource.PlayOneShot(killoffAudioSource.clip);
-					killOffSoundPlayed = true;
-				}
             }
 
 			if(quakCounter >= maxQuaks && !vaporTrapMode)
@@ -126,7 +125,7 @@ public class GameManager : MonoBehaviour
 				DuckGameGlobalConfig.duckPushDistance = 30f;
 				DuckGameGlobalConfig.quackSpamInterval = 0f;
 				quakCounterText.gameObject.SetActive(false);
-				PixelController.SetTargetAlpha(1f, .2f);
+				PixelController.SetTargetAlpha(0.5f, .2f);
 			}
 
             if (vaporTrapMode)
@@ -157,20 +156,26 @@ public class GameManager : MonoBehaviour
 					if (!d)
 						continue;
 					float duckDistance = Vector3.Distance(d.transform.position, new Vector3(0, duckStartY, 0));
-                    if (duckDistance > maxDistance +1)
-                    {//if duck distance is higher than max distance, kill the duck
-                        d.Kill();
-                    }
-                    if (duckDistance <= DuckGameGlobalConfig.winDistance)
-                    {
-                        PlayerWon(d.playerName);
-                        return;
-                    }
-                    
-                }
-            }
+					if (duckDistance > maxDistance + 1)
+					{//if duck distance is higher than max distance, kill the duck
+						d.Kill();
+					}
+				}
+			}
 
-            if (deathDucks >= amountOfDucks)
+			foreach (Duck d in duckList)
+			{
+				if (!d)
+					continue;
+				float duckDistance = Vector3.Distance(d.transform.position, new Vector3(0, duckStartY, 0));
+				if (duckDistance <= DuckGameGlobalConfig.winDistance)
+				{
+					PlayerWon(d.playerName);
+					return;
+				}
+			}
+
+			if (deathDucks >= amountOfDucks)
                 PlayerWon("Antiman");
         }
     }
@@ -200,7 +205,7 @@ public class GameManager : MonoBehaviour
 
     void TweenComplete()
     {
-        GameObject.Find("Directional light").GetComponent<Light>().intensity = 0.5f;
+        GameObject.Find("Directional light").GetComponent<Light>().intensity = 1f;
         winTextObject.SetActive(true);
         winTextObject.GetComponent<Text>().text = playerWonString + " won!";
     }
@@ -226,6 +231,8 @@ public class GameManager : MonoBehaviour
 
     public void RestartLevel()
     {
-        SceneManager.LoadScene("Gameplay");
-    }
+		DuckGameGlobalConfig.ResetVariables();
+		SceneManager.LoadScene("Gameplay");
+
+	}
 }

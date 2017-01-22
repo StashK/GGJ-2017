@@ -166,10 +166,9 @@ public class Duck : MonoBehaviour, IComparable
 		int x = (int)(xPos) + 25;
 		int z = (int)(zPos) + 25;
 
-		int i = x + z * 25;
-		float height = WavePlane.HeightMap[i];
 
-		return height;
+
+		return 0;
 	}
 
 	private void GoLeft()
