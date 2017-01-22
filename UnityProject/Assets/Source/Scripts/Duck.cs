@@ -24,6 +24,8 @@ public class Duck : MonoBehaviour, IComparable
 	private bool isDoubleTapped = false;
 	private int doubleTapCounter = 0;
 
+	private float lastQuackTime;
+
 	private Color duckColour;
 
 	public bool IsDeath()
@@ -136,16 +138,18 @@ public class Duck : MonoBehaviour, IComparable
 		if (DuckGameGlobalConfig.drawDebugLines)
 			Debug.DrawRay(transform.position, displacementVector, Color.green);
 
-		if (airController.GetButtonDown(InputAction.Gameplay.WeaponLeft))
+		if (airController.GetButtonDown(InputAction.Gameplay.WeaponLeft) && !isDeath && (Time.time - lastQuackTime > DuckGameGlobalConfig.quackSpamInterval))
 		{
-			SubtitleRenderer.AddSubtitle(new DuckTitles
+			SubtitleRenderer.Get.AddSubtitle(new DuckTitles
 			{
 				Text = "Quack !",
 				Colour = new Color(duckColour.r + 0.3f, duckColour.g + 0.3f, duckColour.b + 0.3f),
+				Position = transform.position + Vector3.up,
 				Size = 32
-			});
+			}, duckColour);
 
 			GameManager.Get.quakCounter++;
+			lastQuackTime = Time.time;
 		}
 	}
 

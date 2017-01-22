@@ -29,12 +29,14 @@ public class GameManager : MonoBehaviour
 	float moveSpeedCache;
 	float sideMoveSpeedCache;
 	float duckPushDistanceCache;
+	float quackSpamIntervalCache;
 
 	private static GameManager instance;
 	public static GameManager Get { get{ return instance;}}
+	public static float GameIntroTime;
 
-    // Use this for initialization
-    void Start()
+	// Use this for initialization
+	void Start()
     {
 		instance = this;
 		int activePlayers = AirConsoleManager.Instance.ActivePlayers().Count;
@@ -86,7 +88,7 @@ public class GameManager : MonoBehaviour
                 }
             }
 
-			if(quakCounter > maxQuaks && !vaporTrapMode)
+			if(quakCounter >= maxQuaks && !vaporTrapMode)
 			{
 				quakCounter = 0;
 				vaporTrapMode = true;
@@ -97,9 +99,11 @@ public class GameManager : MonoBehaviour
 				moveSpeedCache = DuckGameGlobalConfig.moveSpeed;
 				sideMoveSpeedCache = DuckGameGlobalConfig.sideMoveSpeed;
 				duckPushDistanceCache = DuckGameGlobalConfig.duckPushDistance;
+				quackSpamIntervalCache = DuckGameGlobalConfig.quackSpamInterval;
 				DuckGameGlobalConfig.moveSpeed = 10f;
 				DuckGameGlobalConfig.sideMoveSpeed = 15f;
 				DuckGameGlobalConfig.duckPushDistance = 20f;
+				DuckGameGlobalConfig.quackSpamInterval = 0f;
 				quakCounterText.gameObject.SetActive(false);
 			}
 
@@ -117,6 +121,7 @@ public class GameManager : MonoBehaviour
 					DuckGameGlobalConfig.moveSpeed = moveSpeedCache;
 					DuckGameGlobalConfig.sideMoveSpeed = sideMoveSpeedCache;
 					DuckGameGlobalConfig.duckPushDistance = duckPushDistanceCache;
+					DuckGameGlobalConfig.quackSpamInterval = quackSpamIntervalCache;
 					vaporTrapTimer = vaporTrapClip.length;
 					quakCounterText.gameObject.SetActive(true);
 				}

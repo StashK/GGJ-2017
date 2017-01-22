@@ -15,6 +15,8 @@ public class DuckGameGlobalConfig {
     public static float dropOffTime = 10.0f;
     public static float gridStartDistance = 25f;
 
+	public static float quackSpamInterval = 0.5f;
+
 	public static bool drawDebugLines = true;
 
 	public static float removeDuckFatnessInterval = 10f;
