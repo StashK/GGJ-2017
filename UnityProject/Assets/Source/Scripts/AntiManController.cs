@@ -27,15 +27,19 @@ public class AntiManController : MonoBehaviour
 
     public bool isWaving;
 
+	public AudioClip boatIdle;
+	public AudioClip boatBoost;
+
     // Use this for initialization
     void Start()
     {
         waveParticles = GetComponentInChildren<ParticleSystem>();
         if (!waveParticles)
             Debug.LogWarning("Particles on player not found");
-    }
+		JPL.Core.Sounds.PlaySound(boatIdle, JPL.SOUNDSETTING.SFX);
+	}
 
-    void CheckInput()
+	void CheckInput()
     {
         inputVector.x = Input.GetAxisRaw("Horizontal");
         inputVector.y = Input.GetAxisRaw("Vertical");
@@ -65,7 +69,9 @@ public class AntiManController : MonoBehaviour
 		{
 			// Start boost
 			if (inputBoostDown)
+			{
 				isBoosting = true;
+			}
 			// Recharge boost
 			if (boostTimer < boostTime && !Input.GetButton("Fire1"))
 				boostTimer += boostRechargeRate * 0.1f;
