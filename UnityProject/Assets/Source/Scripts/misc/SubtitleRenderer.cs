@@ -12,8 +12,16 @@ public class DuckTitles
 
 public class SubtitleRenderer : MonoBehaviour
 {
+    public static SubtitleRenderer Get
+    {
+        get
+        {
+            return instance;
+        }
+    }
+    private static SubtitleRenderer instance;
+
     private static List<DuckTitles> queue;
-    private static AudioListener listener;
     public List<AudioClip> Audio = new List<AudioClip>();
 
     public static void AddSubtitle(DuckTitles title)
@@ -25,8 +33,9 @@ public class SubtitleRenderer : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        queue = new List<DuckTitles>();
+        instance = this;
 
+        queue = new List<DuckTitles>();
         JPL.Core.Sounds.PlaySound(Audio[Random.Range(0, Audio.Count)], JPL.SOUNDSETTING.SFX);
     }
 
