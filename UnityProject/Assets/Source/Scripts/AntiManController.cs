@@ -8,8 +8,8 @@ public class AntiManController : MonoBehaviour
 
     public Vector2 inputVector;
     public float inputLength;
-	public bool inputBoostDown;
-	public bool inputBoostUp;
+    public bool inputBoostDown;
+    public bool inputBoostUp;
 
     public Vector3 targetLineForward;
     public float targetLineDistance;
@@ -17,18 +17,18 @@ public class AntiManController : MonoBehaviour
     [Range(0, 1)]
     public float targetLineLerp = 0.5f;
 
-	public bool isBoosting = false;
-	public float boostTime = 2f;
-	private float boostTimer = 2f;
-	public float boostRechargeRate = 1f;
-	public Image boostSprite;
+    public static bool isBoosting = false;
+    public float boostTime = 2f;
+    private float boostTimer = 2f;
+    public float boostRechargeRate = 1f;
+    public Image boostSprite;
 
-	public ParticleSystem waveParticles;
+    public ParticleSystem waveParticles;
 
     public bool isWaving;
 
-	public AudioClip boatIdle;
-	public AudioClip boatBoost;
+    public AudioClip boatIdle;
+    public AudioClip boatBoost;
 
     // Use this for initialization
     void Start()
@@ -36,53 +36,53 @@ public class AntiManController : MonoBehaviour
         waveParticles = GetComponentInChildren<ParticleSystem>();
         if (!waveParticles)
             Debug.LogWarning("Particles on player not found");
-		JPL.Core.Sounds.PlaySound(boatIdle, JPL.SOUNDSETTING.SFX);
-	}
+        JPL.Core.Sounds.PlaySound(boatIdle, JPL.SOUNDSETTING.SFX);
+    }
 
-	void CheckInput()
+    void CheckInput()
     {
         inputVector.x = Input.GetAxisRaw("Horizontal");
         inputVector.y = Input.GetAxisRaw("Vertical");
 
-		inputBoostDown = Input.GetButtonDown("Fire1");
-		inputBoostUp = Input.GetButtonUp("Fire1");
-	}
+        inputBoostDown = Input.GetButtonDown("Fire1");
+        inputBoostUp = Input.GetButtonUp("Fire1");
+    }
 
     void UpdateWaving()
     {
         targetLineForward = Vector3.Slerp(targetLineForward, new Vector3(inputVector.x, 0, inputVector.y), targetLineLerp);
         inputLength = Mathf.Min(1, targetLineForward.magnitude);
 
-		if (isBoosting)
-		{
-			if (inputBoostUp)
-				isBoosting = false;
+        if (isBoosting)
+        {
+            if (inputBoostUp)
+                isBoosting = false;
 
-			// Set boost
-			boostTimer -= Time.deltaTime;
-			if (boostTimer > 0f)
-				inputLength *= 2f;
-			else
-				isBoosting = false;
-		}
-		else
-		{
-			// Start boost
-			if (inputBoostDown)
-			{
-				isBoosting = true;
-			}
-			// Recharge boost
-			if (boostTimer < boostTime && !Input.GetButton("Fire1"))
-				boostTimer += boostRechargeRate * 0.1f;
-		}
-		if (boostSprite)
-			boostSprite.fillAmount = (boostTimer / boostTime);
+            // Set boost
+            boostTimer -= Time.deltaTime;
+            if (boostTimer > 0f)
+                inputLength *= 2f;
+            else
+                isBoosting = false;
+        }
+        else
+        {
+            // Start boost
+            if (inputBoostDown)
+            {
+                isBoosting = true;
+            }
+            // Recharge boost
+            if (boostTimer < boostTime && !Input.GetButton("Fire1"))
+                boostTimer += boostRechargeRate * 0.1f;
+        }
+        if (boostSprite)
+            boostSprite.fillAmount = (boostTimer / boostTime);
 
-		//Debug.Log("InputLenght: " + inputLength);
+        //Debug.Log("InputLenght: " + inputLength);
 
-		// Toggle isWaving and particles
-		if (inputLength > 0.05f)
+        // Toggle isWaving and particles
+        if (inputLength > 0.05f)
         {
             transform.rotation = Quaternion.LookRotation(targetLineForward, transform.up);
             isWaving = true;
@@ -115,15 +115,15 @@ public class AntiManController : MonoBehaviour
             Rigidbody RB = collider.GetComponent<Rigidbody>();
             Duck duck = collider.GetComponent<Duck>();
 
-			if (duck && !duck.IsDeath())
+            if (duck && !duck.IsDeath())
             {
-				duck.displacementVector = targetLineForward.normalized * DuckGameGlobalConfig.duckPushDistance * inputLength;
+                duck.displacementVector = targetLineForward.normalized * DuckGameGlobalConfig.duckPushDistance * inputLength;
             }
         }
     }
 
-	// Update is called once per frame
-	void Update()
+    // Update is called once per frame
+    void Update()
     {
         CheckInput();
 
