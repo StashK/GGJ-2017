@@ -11,7 +11,7 @@ public class DuckGameGlobalConfig {
 
 	public static float duckPushDistance = 5f;
 
-	public static float preDropOffTime = 30f;
+	public static float preDropOffTime = 10f;
     public static float dropOffTime = 10.0f;
     public static float gridStartDistance = 25f;
 

@@ -22,9 +22,12 @@ public class GameManager : MonoBehaviour
     private float vaporTrapTimer;
     public Text quakCounterText;
 
-    public AudioSource audioSource;
-    public AudioClip vaporTrapClip;
+	public bool killOffSoundPlayed;
+
+    public AudioSource backgroundAudioSource;
+	public AudioClip vaporTrapClip;
     public AudioClip vaporDefaultClip;
+    public AudioSource killoffAudioSource;
 
     float moveSpeedCache;
     float sideMoveSpeedCache;
@@ -72,7 +75,8 @@ public class GameManager : MonoBehaviour
             if (!isPreFallOffFinished && Time.time >= startTime + DuckGameGlobalConfig.preDropOffTime) //Duck dieing starts
             {
                 isPreFallOffFinished = true;
-                lastDropOffTime = Time.time;
+				killOffSoundPlayed = false;
+				lastDropOffTime = Time.time;
                 Debug.Log("dropoff starting");
             }
 
@@ -84,9 +88,15 @@ public class GameManager : MonoBehaviour
                     Duck furtherstDuck = GetFurtherstDuck();
                     furtherstDuck.Kill();
                     maxDistance = Vector3.Distance(furtherstDuck.transform.position, Vector3.zero);
-                    hexGrid.SetFalloff(Vector3.Distance(furtherstDuck.transform.position, Vector3.zero));
+                    //hexGrid.SetFalloff(Vector3.Distance(furtherstDuck.transform.position, Vector3.zero));
+                    MeshGen.curDistance = Vector3.Distance(furtherstDuck.transform.position, Vector3.zero);
                     Debug.Log("someone lost");
                 }
+				if(!killOffSoundPlayed && Time.time >= lastDropOffTime + DuckGameGlobalConfig.dropOffTime - killoffAudioSource.clip.length )
+				{
+					killoffAudioSource.PlayOneShot(killoffAudioSource.clip);
+					killOffSoundPlayed = true;
+				}
             }
 
 			if(quakCounter >= maxQuaks && !vaporTrapMode)
@@ -94,9 +104,9 @@ public class GameManager : MonoBehaviour
 				quakCounter = 0;
 				vaporTrapMode = true;
 				vaporTrapTimer = vaporTrapClip.length;
-				audioSource.clip = vaporTrapClip;
-				audioSource.volume = 1.5f;
-				audioSource.Play();
+				backgroundAudioSource.clip = vaporTrapClip;
+				backgroundAudioSource.volume = 1.5f;
+				backgroundAudioSource.Play();
 				moveSpeedCache = DuckGameGlobalConfig.moveSpeed;
 				sideMoveSpeedCache = DuckGameGlobalConfig.sideMoveSpeed;
 				duckPushDistanceCache = DuckGameGlobalConfig.duckPushDistance;
@@ -116,9 +126,9 @@ public class GameManager : MonoBehaviour
 				{
 					vaporTrapMode = false;
 					quakCounter = 0;
-					audioSource.clip = vaporDefaultClip;
-					audioSource.volume = 0.5f;
-					audioSource.Play();
+					backgroundAudioSource.clip = vaporDefaultClip;
+					backgroundAudioSource.volume = 0.5f;
+					backgroundAudioSource.Play();
 					DuckGameGlobalConfig.moveSpeed = moveSpeedCache;
 					DuckGameGlobalConfig.sideMoveSpeed = sideMoveSpeedCache;
 					DuckGameGlobalConfig.duckPushDistance = duckPushDistanceCache;

@@ -52,7 +52,10 @@ public class MainMenu : MonoBehaviour {
 			connectMenuOpen = false;
 		}
 	}
-
+	public void ShutdownGame()
+	{
+		Application.Quit();
+	}
 	public void ToggleStartMenu()
 	{
 		startMenuOpen = !startMenuOpen;
