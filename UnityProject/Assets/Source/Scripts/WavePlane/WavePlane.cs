@@ -116,7 +116,6 @@ public class WavePlane : MonoBehaviour
 
         //Debug.Log(Waves.Length);
 
-
         Mesh mesh = GetComponent<MeshFilter>().mesh;
         Vector3[] vertices = (Vector3[])mesh.vertices.Clone();
 
@@ -140,7 +139,9 @@ public class WavePlane : MonoBehaviour
                 if (distance > RadiusMutliplier)
                     continue;
 
-                waveHeight += Mathf.Clamp(RadiusMutliplier - distance, 0.0f, 2.0f) * HeightMutliplier;
+                float dot = (Vector3.Dot(playerPos.normalized, worldPt.normalized) + 1.0f) * 0.5f;
+
+                waveHeight += Mathf.Clamp(RadiusMutliplier - distance, 0.0f, 2.0f) * HeightMutliplier * dot;
             }
 
             HeightMap[i * 3 + 0] = waveHeight;

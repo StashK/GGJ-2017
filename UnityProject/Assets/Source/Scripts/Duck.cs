@@ -14,14 +14,17 @@ public class Duck : MonoBehaviour, IComparable
     public float distance = 1.0f;
     public float fatness = 1.0f;
 
-	public Vector3 displacementVector;
-	public float displacementRechargeLerp;
+    public Vector3 displacementVector;
+    public float displacementRechargeLerp;
 
-	private bool isDeath = false;
+    private bool isDeath = false;
     private Rigidbody rb;
     private bool tapped = false;
     private bool isDoubleTapped = false;
     private int doubleTapCounter = 0;
+
+    private Color duckColour;
+
     public bool IsDeath()
     {
         return isDeath;
@@ -43,9 +46,10 @@ public class Duck : MonoBehaviour, IComparable
     // Use this for initialization
     void Start()
     {
+        duckColour = PastelGenerator.Generate();
         airController = AirConsoleManager.Instance.GetPlayer(playerId);
         PastelGenerator.Lightness = 0.8f;
-        transform.Find("Ducky_Body").GetComponent<Renderer>().material.color = PastelGenerator.Generate();
+        transform.Find("Ducky_Body").GetComponent<Renderer>().material.SetColor("_EmissionColor", duckColour);
         rb = GetComponent<Rigidbody>();
         transform.LookAt(FindObjectOfType<AntiManController>().transform);
     }
@@ -104,17 +108,17 @@ public class Duck : MonoBehaviour, IComparable
         // transform.LookAt(GetComponent<AntiManController>().transform);
         transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one * Mathf.Pow(fatness, -3), 0.1f);
 
-		displacementVector = Vector3.Lerp(displacementVector, Vector3.zero, displacementRechargeLerp);
+        displacementVector = Vector3.Lerp(displacementVector, Vector3.zero, displacementRechargeLerp);
 
-		if(DuckGameGlobalConfig.drawDebugLines)
-			Debug.DrawRay(transform.position, displacementVector, Color.green);
+        if (DuckGameGlobalConfig.drawDebugLines)
+            Debug.DrawRay(transform.position, displacementVector, Color.green);
 
-		if (airController.GetButtonDown(InputAction.Gameplay.WeaponLeft))
+        if (airController.GetButtonDown(InputAction.Gameplay.WeaponLeft))
         {
             SubtitleRenderer.AddSubtitle(new DuckTitles
             {
                 Text = "Quack !",
-                Colour = transform.Find("Ducky_Body").GetComponent<Renderer>().material.color,
+                Colour = new Color(duckColour.r + 0.3f, duckColour.g + 0.3f, duckColour.b + 0.3f),
                 Size = 32
             });
         }
@@ -134,12 +138,12 @@ public class Duck : MonoBehaviour, IComparable
 
     private void GoLeft()
     {
-		displacementVector -= transform.right * DuckGameGlobalConfig.sideMoveSpeed;
+        displacementVector -= transform.right * DuckGameGlobalConfig.sideMoveSpeed;
     }
 
     private void GoRight()
     {
-		displacementVector += transform.right * DuckGameGlobalConfig.sideMoveSpeed;
+        displacementVector += transform.right * DuckGameGlobalConfig.sideMoveSpeed;
     }
 
     public void Kill()
@@ -148,12 +152,12 @@ public class Duck : MonoBehaviour, IComparable
 
     }
 
-	public void OnCollisionEnter(Collision other)
-	{
-		if(other.collider.tag == "BreadPickup")
-		{
-			fatness++;
-			Destroy(other.gameObject);
-		}
-	}
+    public void OnCollisionEnter(Collision other)
+    {
+        if (other.collider.tag == "BreadPickup")
+        {
+            fatness++;
+            Destroy(other.gameObject);
+        }
+    }
 }
