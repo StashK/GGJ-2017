@@ -75,12 +75,16 @@ public class MeshGen : MonoBehaviour
     {
         yield return Ninja.JumpToUnity;
         //vertices = GetComponent<MeshFilter>().mesh.vertices;
-        float[] height;
+        //float[] height;
 
-        if (WavePlane.HeightMap != null)
-            height = (float[])WavePlane.HeightMap.Clone();
-        else
-            height = new float[vertices.Length];
+        //if (WavePlane.HeightMap != null)
+        //    height = (float[])WavePlane.HeightMap.Clone();
+        //else
+        //    height = new float[vertices.Length];
+
+        float[,] height = (float[,])WavePlane.heightMap2.Clone();
+
+        if (height == null) height = new float[101,101];
 
         yield return Ninja.JumpBack;
         curDistance = distance;
@@ -100,6 +104,8 @@ public class MeshGen : MonoBehaviour
                 {
                     vertices[vIndex] = q.vertices[k];
                     //vertices[vIndex].y += height[vIndex];
+                    Vector2 gridPos = WavePlane.GridPos(vertices[vIndex]);
+                    vertices[vIndex].y += height[(int)gridPos.x, (int)gridPos.y];
                     vIndex++;
                 }
 

@@ -33,6 +33,8 @@ public class GameManager : MonoBehaviour
 	private static GameManager instance;
 	public static GameManager Get { get{ return instance;}}
 
+    public static float GameIntroTime;
+
     // Use this for initialization
     void Start()
     {
