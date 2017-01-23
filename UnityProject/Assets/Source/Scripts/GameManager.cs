@@ -70,7 +70,9 @@ public class GameManager : MonoBehaviour
 
 
         maxQuaks = activePlayers * 15;
-		DuckGameGlobalConfig.duckPushDistance *= (1f + (activePlayers * 0.5f));
+
+		if(activePlayers > 3)
+			DuckGameGlobalConfig.duckPushDistance *= (1f + (activePlayers * 0.05f));
 		Debug.Log(DuckGameGlobalConfig.duckPushDistance);
 	}
 
@@ -120,9 +122,9 @@ public class GameManager : MonoBehaviour
 				sideMoveSpeedCache = DuckGameGlobalConfig.sideMoveSpeed;
 				duckPushDistanceCache = DuckGameGlobalConfig.duckPushDistance;
 				quackSpamIntervalCache = DuckGameGlobalConfig.quackSpamInterval;
-				DuckGameGlobalConfig.moveSpeed = 15f;
-				DuckGameGlobalConfig.sideMoveSpeed = 30f;
-				DuckGameGlobalConfig.duckPushDistance = 30f;
+				DuckGameGlobalConfig.moveSpeed = 10f;
+				DuckGameGlobalConfig.sideMoveSpeed = 25f;
+				DuckGameGlobalConfig.duckPushDistance = 50f;
 				DuckGameGlobalConfig.quackSpamInterval = 0f;
 				quakCounterText.gameObject.SetActive(false);
 				PixelController.SetTargetAlpha(0.5f, .2f);

@@ -21,6 +21,7 @@ public class AntiManController : MonoBehaviour
     private float boostTimer = 2f;
     public float boostRechargeRate = 1f;
     public Image boostSprite;
+	public float targetingWidth = 6f;
 
     public ParticleSystem waveParticles;
 
@@ -62,7 +63,7 @@ public class AntiManController : MonoBehaviour
             // Set boost
             boostTimer -= Time.deltaTime;
             if (boostTimer > 0f)
-                inputLength *= 2f;
+                inputLength *= 1.5f;
             else
                 isBoosting = false;
         }
@@ -106,7 +107,7 @@ public class AntiManController : MonoBehaviour
 
     void PushBackDucks()
     {
-        Collider[] gameObjectsInRange = Physics.OverlapCapsule(transform.position, transform.position + targetLineForward.normalized * DuckGameGlobalConfig.targetLineDistance * inputLength, 2f);
+        Collider[] gameObjectsInRange = Physics.OverlapCapsule(transform.position, transform.position + targetLineForward.normalized * DuckGameGlobalConfig.targetLineDistance * inputLength, targetingWidth);
 
         if (DuckGameGlobalConfig.drawDebugLines)
             Debug.DrawRay(transform.position, targetLineForward.normalized * DuckGameGlobalConfig.targetLineDistance * inputLength, Color.red);
